@@ -3,195 +3,396 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — MAX GAMES</title>
-<meta name="robots" content="noindex,nofollow">
+<title>MAX GAMES — Probably fun.</title>
+<meta name="description" content="Browser games built one a day. Tetris, Suika, voxel sandbox and climbing — all playable right now, no install.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0a12;--bg-2:#10101c;--panel:#15151f;--panel-2:#1b1b28;
-    --line:#272736;--ink:#ecedf5;--muted:#8a8aa0;--faint:#5a5a72;
-    --dash:#ff4d8a;--voxel:#6ad06a;
-    --display:"Press Start 2P",monospace;
-    --head:"Space Grotesk",system-ui,sans-serif;
-    --mono:"JetBrains Mono",monospace;
+    --bg:#0a0a12;
+    --bg-2:#10101c;
+    --panel:#15151f;
+    --panel-2:#1b1b28;
+    --line:#272736;
+    --ink:#ecedf5;
+    --muted:#8a8aa0;
+    --faint:#5a5a72;
+
+    --suika:#ff7a4d;
+    --tetris:#46c8ff;
+    --voxel:#6ad06a;
+    --climb:#a684ff;
+
+    --display:"Press Start 2P", monospace;
+    --head:"Space Grotesk", system-ui, sans-serif;
+    --mono:"JetBrains Mono", monospace;
   }
+
   *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
   body{
-    background:var(--bg);color:var(--ink);font-family:var(--head);
-    line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--head);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
   }
+
   body::before{
-    content:"";position:fixed;inset:0;
-    background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+    content:"";
+    position:fixed;inset:0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
     background-size:42px 42px;
     mask-image:radial-gradient(ellipse 120% 80% at 50% 0%,#000 30%,transparent 75%);
     pointer-events:none;z-index:0;
   }
-  .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:48px 24px 64px}
 
-  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:40px;flex-wrap:wrap}
-  .brand{font-family:var(--display);font-size:16px;color:var(--ink)}
-  .brand span{color:var(--dash)}
-  .tag-admin{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);padding:4px 10px;border-radius:6px}
+  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
 
-  /* login */
-  .login{max-width:380px;margin:60px auto 0}
-  .login h1{font-family:var(--head);font-size:22px;font-weight:700;margin-bottom:8px}
-  .login p{font-size:14px;color:var(--muted);margin-bottom:24px}
-  .field{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:var(--head);font-size:15px;padding:12px 14px;margin-bottom:12px}
-  .field::placeholder{color:var(--faint)}
-  .field:focus{outline:none;border-color:var(--faint)}
-  .btn{
-    width:100%;font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.06em;
-    background:var(--ink);color:var(--bg);border:none;border-radius:10px;padding:13px;cursor:pointer;transition:opacity .2s;
+  /* ---------- HERO ---------- */
+  header{padding:64px 0 28px;text-align:center}
+
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--faint);
+    display:inline-flex;align-items:center;gap:10px;
+    margin-bottom:34px;
   }
-  .btn:hover{opacity:.85}
-  .btn:disabled{opacity:.4;cursor:default}
-  .msg{margin-top:14px;font-family:var(--mono);font-size:13px;min-height:18px;color:var(--dash)}
+  .eyebrow .blink{
+    width:7px;height:7px;background:var(--voxel);border-radius:1px;
+    animation:blink 1.2s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:.15}}
 
-  /* feedback list */
-  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-  .panel-head h2{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-  .count{font-family:var(--mono);font-size:12px;color:var(--faint)}
-  .logout{font-family:var(--mono);font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s}
-  .logout:hover{color:var(--ink);border-color:var(--faint)}
+  .tower{display:flex;justify-content:center;margin-bottom:8px}
+  .tower svg{width:148px;height:auto;overflow:visible}
+  .cube{transform-origin:center;animation:drop .6s cubic-bezier(.2,1.3,.4,1) backwards}
+  .cube.c1{animation-delay:.05s}
+  .cube.c2{animation-delay:.22s}
+  .cube.c3{animation-delay:.39s}
+  .cube.c4{animation-delay:.56s}
+  @keyframes drop{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:translateY(0)}}
 
-  .fb{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel-2));border-radius:14px;padding:16px 18px;margin-bottom:12px}
-  .fb-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
-  .fb-name{font-family:var(--head);font-weight:700;font-size:15px;color:var(--ink)}
-  .fb-time{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
-  .fb-msg{font-size:15px;color:var(--muted);line-height:1.55;white-space:pre-wrap;word-break:break-word}
-  .empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;padding:40px 0}
+  h1{
+    font-family:var(--display);
+    font-size:clamp(30px,8vw,62px);
+    line-height:1.04;
+    letter-spacing:.01em;
+    margin:14px 0 18px;
+    background:linear-gradient(180deg,#fff 0%,#c8c8e0 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 40px rgba(120,120,255,.12);
+  }
+  .tagline{
+    font-size:clamp(15px,2.4vw,18px);
+    color:var(--muted);max-width:34ch;margin:0 auto;
+  }
+  .tagline b{color:var(--ink);font-weight:600}
 
-  .hidden{display:none}
+  .stats{
+    display:flex;justify-content:center;gap:0;flex-wrap:wrap;
+    margin:38px auto 0;
+    border:1px solid var(--line);border-radius:14px;
+    background:linear-gradient(180deg,var(--panel),var(--bg-2));
+    max-width:560px;overflow:hidden;
+  }
+  .stat{flex:1;min-width:120px;padding:18px 14px;position:relative}
+  .stat + .stat{border-left:1px solid var(--line)}
+  .stat .num{font-family:var(--display);font-size:22px;color:var(--ink)}
+  .stat .num span{font-size:11px;color:var(--faint);margin-left:3px}
+  .stat .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:8px}
+
+  /* ---------- GAMES ---------- */
+  .section-head{
+    display:flex;align-items:baseline;justify-content:space-between;
+    margin:72px 0 26px;gap:16px;flex-wrap:wrap;
+  }
+  .section-head h2{
+    font-family:var(--mono);font-size:13px;font-weight:700;
+    letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
+  }
+  .section-head .rule{flex:1;height:1px;background:var(--line);min-width:30px}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+
+  .card{
+    position:relative;
+    background:linear-gradient(180deg,var(--panel),var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:18px;
+    overflow:hidden;
+    display:flex;flex-direction:column;
+    text-decoration:none;color:inherit;
+    transition:transform .35s cubic-bezier(.2,.9,.3,1),border-color .35s,box-shadow .35s;
+  }
+  .card::after{
+    content:"";position:absolute;inset:0;border-radius:18px;
+    box-shadow:inset 0 0 0 1px transparent;
+    transition:box-shadow .35s;pointer-events:none;
+  }
+  .card:hover{transform:translateY(-6px)}
+  .card:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+
+  .preview{
+    position:relative;aspect-ratio:16/9;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;border-bottom:1px solid var(--line);
+  }
+  .preview svg{width:100%;height:100%;display:block}
+  .badge{
+    position:absolute;top:12px;left:12px;
+    font-family:var(--mono);font-size:11px;font-weight:700;
+    letter-spacing:.08em;
+    padding:5px 9px;border-radius:6px;
+    background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .num-tag{
+    position:absolute;top:12px;right:14px;
+    font-family:var(--display);font-size:13px;color:rgba(255,255,255,.32);
+  }
+
+  .body{padding:20px 22px 22px}
+  .body h3{
+    font-family:var(--head);font-size:20px;font-weight:700;
+    display:flex;align-items:center;gap:9px;margin-bottom:6px;color:var(--ink);
+  }
+  .body .dot{width:9px;height:9px;border-radius:2px;flex:none}
+  .body p{font-size:14px;color:var(--muted);line-height:1.55}
+
+  .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+  .tag{
+    font-family:var(--mono);font-size:11px;color:var(--faint);
+    border:1px solid var(--line);border-radius:5px;padding:3px 8px;
+  }
+
+  .play{
+    margin-top:18px;display:flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:13px;font-weight:700;
+    letter-spacing:.04em;color:var(--ink);
+  }
+  .play .arrow{transition:transform .3s}
+  .card:hover .play .arrow{transform:translateX(4px)}
+
+  .card.suika:hover{border-color:var(--suika)}
+  .card.suika:hover::after{box-shadow:inset 0 0 40px -20px var(--suika)}
+  .card.suika .dot,.card.suika .play{color:var(--suika)}
+  .card.tetris:hover{border-color:var(--tetris)}
+  .card.tetris:hover::after{box-shadow:inset 0 0 40px -20px var(--tetris)}
+  .card.tetris .dot,.card.tetris .play{color:var(--tetris)}
+  .card.voxel:hover{border-color:var(--voxel)}
+  .card.voxel:hover::after{box-shadow:inset 0 0 40px -20px var(--voxel)}
+  .card.voxel .dot,.card.voxel .play{color:var(--voxel)}
+  .card.climb:hover{border-color:var(--climb)}
+  .card.climb:hover::after{box-shadow:inset 0 0 40px -20px var(--climb)}
+  .card.climb .dot,.card.climb .play{color:var(--climb)}
+
+  /* ---------- WIP ---------- */
+  .wip{
+    margin-top:24px;
+    border:1px dashed var(--line);border-radius:16px;
+    padding:22px 24px;
+    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
+    background:repeating-linear-gradient(135deg,transparent,transparent 12px,rgba(255,255,255,.012) 12px,rgba(255,255,255,.012) 24px);
+  }
+  .wip .spin{
+    width:38px;height:38px;flex:none;border-radius:9px;
+    background:linear-gradient(135deg,#2a3550,#1a2238);
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:20px;
+  }
+  .wip .spin span{display:inline-block;animation:spin 4s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .wip .txt{flex:1;min-width:200px}
+  .wip h4{font-family:var(--head);font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .wip h4 .chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:#9fb4ff;border:1px solid #3a4a7a;background:rgba(70,90,160,.15);padding:2px 7px;border-radius:5px}
+  .wip p{font-size:13px;color:var(--muted);margin-top:4px}
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    margin:80px 0 56px;padding-top:30px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  footer .sig{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.1em}
+  footer .sig b{color:var(--muted)}
+  footer a{color:var(--muted);text-decoration:none;font-family:var(--mono);font-size:12px}
+  footer a:hover{color:var(--ink)}
+
+  @media(max-width:640px){
+    .grid{grid-template-columns:1fr}
+    header{padding:48px 0 20px}
+    .stat .num{font-size:18px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <div class="top">
-    <div class="brand">MAX<span>·</span>ADMIN</div>
-    <div class="tag-admin">private</div>
-  </div>
+  <!-- ===== HERO ===== -->
+  <header>
+    <div class="eyebrow"><span class="blink"></span>It's free so just play</div>
 
-  <!-- LOGIN -->
-  <div id="login" class="login">
-    <h1>Sign in</h1>
-    <p>Only Max can read the feedback. Enter your Firebase login.</p>
-    <input id="email" class="field" type="email" placeholder="Email" autocomplete="username">
-    <input id="password" class="field" type="password" placeholder="Password" autocomplete="current-password">
-    <button id="signin" class="btn">Sign in</button>
-    <div id="loginMsg" class="msg"></div>
-  </div>
-
-  <!-- FEEDBACK -->
-  <div id="dashboard" class="hidden">
-    <div class="panel-head">
-      <h2>Feedback</h2>
-      <span id="count" class="count"></span>
-      <button id="logout" class="logout">Sign out</button>
+    <div class="tower" aria-hidden="true">
+      <svg viewBox="0 0 120 150">
+        <g class="cube c1">
+          <polygon points="60,96 100,116 60,136 20,116" fill="#ff7a4d"/>
+          <polygon points="20,116 60,136 60,150 20,130" fill="#c4502b"/>
+          <polygon points="100,116 60,136 60,150 100,130" fill="#e0613a"/>
+        </g>
+        <g class="cube c2">
+          <polygon points="60,72 100,92 60,112 20,92" fill="#46c8ff"/>
+          <polygon points="20,92 60,112 60,126 20,106" fill="#2a82b0"/>
+          <polygon points="100,92 60,112 60,126 100,106" fill="#369ad4"/>
+        </g>
+        <g class="cube c3">
+          <polygon points="60,48 100,68 60,88 20,68" fill="#6ad06a"/>
+          <polygon points="20,68 60,88 60,102 20,82" fill="#3f8a3f"/>
+          <polygon points="100,68 60,88 60,102 100,82" fill="#52a852"/>
+        </g>
+        <g class="cube c4">
+          <polygon points="60,24 100,44 60,64 20,44" fill="#a684ff"/>
+          <polygon points="20,44 60,64 60,78 20,58" fill="#6a4fb0"/>
+          <polygon points="100,44 60,64 60,78 100,58" fill="#8366d4"/>
+        </g>
+      </svg>
     </div>
-    <div id="list"></div>
+
+    <h1>MAX<br>GAMES</h1>
+    <p class="tagline"><b>Probably fun.</b><br>Browser games you can play right now.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="num">4<span>games</span></div><div class="lbl">Now live</div></div>
+      <div class="stat"><div class="num" style="font-family:var(--mono);font-weight:700">&#8734;</div><div class="lbl">In progress</div></div>
+    </div>
+  </header>
+
+  <!-- ===== GAMES ===== -->
+  <div class="section-head">
+    <h2>Playable</h2><span class="rule"></span>
   </div>
+
+  <div class="grid">
+
+    <!-- SUIKA -->
+    <a class="card suika" href="https://24bf018-svg.github.io/Max.Suika/" target="_blank" rel="noopener">
+      <div class="preview" style="background:radial-gradient(120% 120% at 50% 0%,#241510,#0d0a0a)">
+        <span class="badge" style="color:var(--suika)">PUZZLE</span><span class="num-tag">01</span>
+        <svg viewBox="0 0 320 180" aria-hidden="true">
+          <rect x="92" y="36" width="136" height="124" rx="6" fill="none" stroke="#3a2a22" stroke-width="2"/>
+          <circle cx="124" cy="138" r="20" fill="#ff7a4d"/>
+          <circle cx="170" cy="132" r="26" fill="#ffd24d"/>
+          <circle cx="205" cy="142" r="16" fill="#7ad07a"/>
+          <circle cx="140" cy="100" r="14" fill="#ff5470"/>
+          <circle cx="186" cy="96" r="18" fill="#b07aff"/>
+          <circle cx="160" cy="60" r="10" fill="#ffd24d" opacity=".9"/>
+          <circle cx="160" cy="60" r="10" fill="none" stroke="#fff" stroke-opacity=".25"/>
+          <line x1="160" y1="36" x2="160" y2="50" stroke="#5a4030" stroke-width="2" stroke-dasharray="3 3"/>
+        </svg>
+      </div>
+      <div class="body">
+        <h3><span class="dot" style="background:var(--suika)"></span>Max Suika</h3>
+        <p>Drop fruit and merge matching pairs. Chain them up, grow them bigger, and reach for the top of the evolution. A physics puzzle about timing and greed.</p>
+        <div class="meta"><span class="tag">Physics Puzzle</span><span class="tag">Canvas</span><span class="tag">Score Attack</span></div>
+        <div class="play">Play<span class="arrow">&rarr;</span></div>
+      </div>
+    </a>
+
+    <!-- TETRIS -->
+    <a class="card tetris" href="https://24bf018-svg.github.io/Max.tetris/" target="_blank" rel="noopener">
+      <div class="preview" style="background:radial-gradient(120% 120% at 50% 0%,#0e1c26,#080d12)">
+        <span class="badge" style="color:var(--tetris)">ARCADE</span><span class="num-tag">02</span>
+        <svg viewBox="0 0 320 180" aria-hidden="true">
+          <g stroke="#0a0d12" stroke-width="1.5">
+            <rect x="118" y="120" width="20" height="20" fill="#46c8ff"/>
+            <rect x="138" y="120" width="20" height="20" fill="#ffce4d"/>
+            <rect x="158" y="120" width="20" height="20" fill="#ffce4d"/>
+            <rect x="178" y="120" width="20" height="20" fill="#7a6bff"/>
+            <rect x="118" y="140" width="20" height="20" fill="#ff6b8a"/>
+            <rect x="138" y="140" width="20" height="20" fill="#46c8ff"/>
+            <rect x="158" y="140" width="20" height="20" fill="#6ad06a"/>
+            <rect x="178" y="140" width="20" height="20" fill="#ff9a4d"/>
+            <rect x="138" y="40" width="20" height="20" fill="#b07aff"/>
+            <rect x="118" y="60" width="20" height="20" fill="#b07aff"/>
+            <rect x="138" y="60" width="20" height="20" fill="#b07aff"/>
+            <rect x="158" y="60" width="20" height="20" fill="#b07aff"/>
+          </g>
+          <line x1="148" y1="84" x2="148" y2="116" stroke="#46c8ff" stroke-opacity=".4" stroke-width="2" stroke-dasharray="2 4"/>
+        </svg>
+      </div>
+      <div class="body">
+        <h3><span class="dot" style="background:var(--tetris)"></span>Max Tetris</h3>
+        <p>Hold, hard drop and full rotation &mdash; the real deal. Clear lines and climb the levels before the stack buries you.</p>
+        <div class="meta"><span class="tag">Stacker</span><span class="tag">Hold &amp; Drop</span><span class="tag">Time Attack</span></div>
+        <div class="play">Play<span class="arrow">&rarr;</span></div>
+      </div>
+    </a>
+
+    <!-- VOXELCRAFT -->
+    <a class="card voxel" href="https://stupendous-speculoos-f02849.netlify.app/" target="_blank" rel="noopener">
+      <div class="preview" style="background:linear-gradient(180deg,#1a2740,#0c1320 60%,#0a0f12)">
+        <span class="badge" style="color:var(--voxel)">SANDBOX</span><span class="num-tag">03</span>
+        <svg viewBox="0 0 320 180" aria-hidden="true">
+          <circle cx="250" cy="46" r="14" fill="#ffe9a8" opacity=".85"/>
+          <g>
+            <polygon points="160,70 220,100 160,130 100,100" fill="#6ad06a"/>
+            <polygon points="100,100 160,130 160,158 100,128" fill="#5a3a26"/>
+            <polygon points="220,100 160,130 160,158 220,128" fill="#7a4f34"/>
+            <polygon points="160,52 184,64 160,76 136,64" fill="#9ad9ff"/>
+            <polygon points="136,64 160,76 160,92 136,80" fill="#4a78a8"/>
+            <polygon points="184,64 160,76 160,92 184,80" fill="#6a9cc8"/>
+          </g>
+        </svg>
+      </div>
+      <div class="body">
+        <h3><span class="dot" style="background:var(--voxel)"></span>VoxelCraft</h3>
+        <p>Mine, gather and build across a vast 128&times;128 world. Crafting, survival and free building in a 3D voxel sandbox.</p>
+        <div class="meta"><span class="tag">Sandbox</span><span class="tag">3D &middot; WebGL</span><span class="tag">Crafting</span></div>
+        <div class="play">Play<span class="arrow">&rarr;</span></div>
+      </div>
+    </a>
+
+    <!-- MAX-UP -->
+    <a class="card climb" href="https://24bf018-svg.github.io/Max-Up/" target="_blank" rel="noopener">
+      <div class="preview" style="background:linear-gradient(180deg,#241a40,#141026 60%,#0c0a14)">
+        <span class="badge" style="color:var(--climb)">3D ACTION</span><span class="num-tag">04</span>
+        <svg viewBox="0 0 320 180" aria-hidden="true">
+          <g opacity=".5"><circle cx="70" cy="40" r="2" fill="#fff"/><circle cx="250" cy="30" r="1.5" fill="#fff"/><circle cx="120" cy="24" r="1.5" fill="#fff"/><circle cx="280" cy="70" r="2" fill="#fff"/></g>
+          <g>
+            <polygon points="160,150 196,166 160,182 124,166" fill="#3a2f5a"/>
+            <polygon points="120,116 150,130 120,144 90,130" fill="#4a3d72"/>
+            <polygon points="208,96 236,109 208,122 180,109" fill="#4a3d72"/>
+            <polygon points="150,64 178,77 150,90 122,77" fill="#5a4a8a"/>
+            <polygon points="166,30 190,41 166,52 142,41" fill="#7a64b0"/>
+          </g>
+          <circle cx="166" cy="22" r="6" fill="#a684ff"/>
+          <path d="M250 150 L250 110 M238 122 L250 110 L262 122" stroke="#a684ff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+        </svg>
+      </div>
+      <div class="body">
+        <h3><span class="dot" style="background:var(--climb)"></span>Max-Up</h3>
+        <p>Just go up. Leap from platform to platform toward the top of the sky. Fall once and you're back to the start &mdash; careful, but bold.</p>
+        <div class="meta"><span class="tag">Only Up-like</span><span class="tag">3D &middot; WebGL</span><span class="tag">Hardcore</span></div>
+        <div class="play">Play<span class="arrow">&rarr;</span></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="sig">Built daily by <b>Max</b>, one block at a time</div>
+    <a href="https://github.com/24bf018-svg" target="_blank" rel="noopener">github / 24bf018-svg &#8599;</a>
+  </footer>
 
 </div>
-
-<!-- Firebase (compat) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-<script>
-  /* ============================================================
-     ▼▼▼ index.html と「同じ」Firebase 設定をここに貼ってください ▼▼▼
-     ============================================================ */
-  const FIREBASE_CONFIG = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
-  };
-  /* ▲▲▲ ここまで ▲▲▲ */
-
-  var loginEl = document.getElementById('login');
-  var dashEl = document.getElementById('dashboard');
-  var loginMsg = document.getElementById('loginMsg');
-  var listEl = document.getElementById('list');
-  var countEl = document.getElementById('count');
-
-  var CONFIGURED = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf("YOUR_") !== 0;
-  if (!CONFIGURED) {
-    loginMsg.textContent = 'Firebase is not configured yet. Paste your config above.';
-  }
-
-  var auth = null, db = null;
-  if (CONFIGURED) {
-    try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-      auth = firebase.auth();
-      db = firebase.database();
-    } catch (e) { console.warn(e); loginMsg.textContent = 'Firebase init failed.'; }
-  }
-
-  /* sign in */
-  document.getElementById('signin').addEventListener('click', function(){
-    if (!auth) return;
-    var email = document.getElementById('email').value.trim();
-    var pass = document.getElementById('password').value;
-    loginMsg.textContent = 'Signing in...';
-    auth.signInWithEmailAndPassword(email, pass)
-      .catch(function(err){ loginMsg.textContent = err.message; });
-  });
-  document.getElementById('password').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') document.getElementById('signin').click();
-  });
-
-  /* logout */
-  document.getElementById('logout').addEventListener('click', function(){
-    if (auth) auth.signOut();
-  });
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
-    });
-  }
-
-  function render(items){
-    if (!items.length){ listEl.innerHTML = '<div class="empty">No feedback yet.</div>'; countEl.textContent = ''; return; }
-    countEl.textContent = items.length + (items.length === 1 ? ' message' : ' messages');
-    listEl.innerHTML = items.map(function(f){
-      var d = f.time ? new Date(f.time).toLocaleString() : '';
-      return '<div class="fb"><div class="fb-top"><span class="fb-name">' +
-        escapeHtml(f.name || 'anon') + '</span><span class="fb-time">' +
-        escapeHtml(d) + '</span></div><div class="fb-msg">' +
-        escapeHtml(f.message || '') + '</div></div>';
-    }).join('');
-  }
-
-  /* auth state */
-  if (auth) {
-    auth.onAuthStateChanged(function(user){
-      if (user) {
-        loginEl.classList.add('hidden');
-        dashEl.classList.remove('hidden');
-        db.ref('feedback').on('value', function(snap){
-          var items = [];
-          snap.forEach(function(c){ items.push(c.val()); });
-          items.sort(function(a,b){ return (b.time||0) - (a.time||0); }); // newest first
-          render(items);
-        });
-      } else {
-        dashEl.classList.add('hidden');
-        loginEl.classList.remove('hidden');
-        loginMsg.textContent = CONFIGURED ? '' : loginMsg.textContent;
-      }
-    });
-  }
-</script>
 </body>
 </html>
