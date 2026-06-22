@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — MAX GAMES</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a12;--bg-2:#10101c;--panel:#15151f;--panel-2:#1b1b28;
+    --line:#272736;--ink:#ecedf5;--muted:#8a8aa0;--faint:#5a5a72;
+    --dash:#ff4d8a;--voxel:#6ad06a;
+    --display:"Press Start 2P",monospace;
+    --head:"Space Grotesk",system-ui,sans-serif;
+    --mono:"JetBrains Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--head);
+    line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;
+    background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+    background-size:42px 42px;
+    mask-image:radial-gradient(ellipse 120% 80% at 50% 0%,#000 30%,transparent 75%);
+    pointer-events:none;z-index:0;
+  }
+  .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:48px 24px 64px}
 
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:40px;flex-wrap:wrap}
+  .brand{font-family:var(--display);font-size:16px;color:var(--ink)}
+  .brand span{color:var(--dash)}
+  .tag-admin{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);padding:4px 10px;border-radius:6px}
+
+  /* login */
+  .login{max-width:380px;margin:60px auto 0}
+  .login h1{font-family:var(--head);font-size:22px;font-weight:700;margin-bottom:8px}
+  .login p{font-size:14px;color:var(--muted);margin-bottom:24px}
+  .field{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:var(--head);font-size:15px;padding:12px 14px;margin-bottom:12px}
+  .field::placeholder{color:var(--faint)}
+  .field:focus{outline:none;border-color:var(--faint)}
+  .btn{
+    width:100%;font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.06em;
+    background:var(--ink);color:var(--bg);border:none;border-radius:10px;padding:13px;cursor:pointer;transition:opacity .2s;
+  }
+  .btn:hover{opacity:.85}
+  .btn:disabled{opacity:.4;cursor:default}
+  .msg{margin-top:14px;font-family:var(--mono);font-size:13px;min-height:18px;color:var(--dash)}
+
+  /* feedback list */
+  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+  .panel-head h2{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .count{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .logout{font-family:var(--mono);font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s}
+  .logout:hover{color:var(--ink);border-color:var(--faint)}
+
+  .fb{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel-2));border-radius:14px;padding:16px 18px;margin-bottom:12px}
+  .fb-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
+  .fb-name{font-family:var(--head);font-weight:700;font-size:15px;color:var(--ink)}
+  .fb-time{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .fb-msg{font-size:15px;color:var(--muted);line-height:1.55;white-space:pre-wrap;word-break:break-word}
+  .empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;padding:40px 0}
+
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">MAX<span>·</span>ADMIN</div>
+    <div class="tag-admin">private</div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="login" class="login">
+    <h1>Sign in</h1>
+    <p>Only Max can read the feedback. Enter your Firebase login.</p>
+    <input id="email" class="field" type="email" placeholder="Email" autocomplete="username">
+    <input id="password" class="field" type="password" placeholder="Password" autocomplete="current-password">
+    <button id="signin" class="btn">Sign in</button>
+    <div id="loginMsg" class="msg"></div>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div id="dashboard" class="hidden">
+    <div class="panel-head">
+      <h2>Feedback</h2>
+      <span id="count" class="count"></span>
+      <button id="logout" class="logout">Sign out</button>
+    </div>
+    <div id="list"></div>
+  </div>
+
+</div>
+
+<!-- Firebase (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+  /* ============================================================
+     ▼▼▼ index.html と「同じ」Firebase 設定をここに貼ってください ▼▼▼
+     ============================================================ */
+  const FIREBASE_CONFIG = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+  /* ▲▲▲ ここまで ▲▲▲ */
+
+  var loginEl = document.getElementById('login');
+  var dashEl = document.getElementById('dashboard');
+  var loginMsg = document.getElementById('loginMsg');
+  var listEl = document.getElementById('list');
+  var countEl = document.getElementById('count');
+
+  var CONFIGURED = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf("YOUR_") !== 0;
+  if (!CONFIGURED) {
+    loginMsg.textContent = 'Firebase is not configured yet. Paste your config above.';
+  }
+
+  var auth = null, db = null;
+  if (CONFIGURED) {
+    try {
+      firebase.initializeApp(FIREBASE_CONFIG);
+      auth = firebase.auth();
+      db = firebase.database();
+    } catch (e) { console.warn(e); loginMsg.textContent = 'Firebase init failed.'; }
+  }
+
+  /* sign in */
+  document.getElementById('signin').addEventListener('click', function(){
+    if (!auth) return;
+    var email = document.getElementById('email').value.trim();
+    var pass = document.getElementById('password').value;
+    loginMsg.textContent = 'Signing in...';
+    auth.signInWithEmailAndPassword(email, pass)
+      .catch(function(err){ loginMsg.textContent = err.message; });
+  });
+  document.getElementById('password').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') document.getElementById('signin').click();
+  });
+
+  /* logout */
+  document.getElementById('logout').addEventListener('click', function(){
+    if (auth) auth.signOut();
+  });
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function render(items){
+    if (!items.length){ listEl.innerHTML = '<div class="empty">No feedback yet.</div>'; countEl.textContent = ''; return; }
+    countEl.textContent = items.length + (items.length === 1 ? ' message' : ' messages');
+    listEl.innerHTML = items.map(function(f){
+      var d = f.time ? new Date(f.time).toLocaleString() : '';
+      return '<div class="fb"><div class="fb-top"><span class="fb-name">' +
+        escapeHtml(f.name || 'anon') + '</span><span class="fb-time">' +
+        escapeHtml(d) + '</span></div><div class="fb-msg">' +
+        escapeHtml(f.message || '') + '</div></div>';
+    }).join('');
+  }
+
+  /* auth state */
+  if (auth) {
+    auth.onAuthStateChanged(function(user){
+      if (user) {
+        loginEl.classList.add('hidden');
+        dashEl.classList.remove('hidden');
+        db.ref('feedback').on('value', function(snap){
+          var items = [];
+          snap.forEach(function(c){ items.push(c.val()); });
+          items.sort(function(a,b){ return (b.time||0) - (a.time||0); }); // newest first
+          render(items);
+        });
+      } else {
+        dashEl.classList.add('hidden');
+        loginEl.classList.remove('hidden');
+        loginMsg.textContent = CONFIGURED ? '' : loginMsg.textContent;
+      }
+    });
+  }
+</script>
+</body>
+</html>
