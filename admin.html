@@ -12,26 +12,15 @@
   :root{
     --bg:#0a0a12;--bg-2:#10101c;--panel:#15151f;--panel-2:#1b1b28;
     --line:#272736;--ink:#ecedf5;--muted:#8a8aa0;--faint:#5a5a72;
-    --dash:#ff4d8a;--voxel:#6ad06a;
-    --display:"Press Start 2P",monospace;
-    --head:"Space Grotesk",system-ui,sans-serif;
-    --mono:"JetBrains Mono",monospace;
+    --dash:#ff4d8a;--voxel:#6ad06a;--tetris:#46c8ff;--suika:#ff7a4d;
+    --t-game:#6ad06a;--t-update:#46c8ff;--t-version:#ff4d8a;--t-account:#ff7a4d;
+    --display:"Press Start 2P",monospace;--head:"Space Grotesk",system-ui,sans-serif;--mono:"JetBrains Mono",monospace;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{
-    background:var(--bg);color:var(--ink);font-family:var(--head);
-    line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh;
-  }
-  body::before{
-    content:"";position:fixed;inset:0;
-    background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-    background-size:42px 42px;
-    mask-image:radial-gradient(ellipse 120% 80% at 50% 0%,#000 30%,transparent 75%);
-    pointer-events:none;z-index:0;
-  }
-  .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:48px 24px 64px}
-
-  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:40px;flex-wrap:wrap}
+  body{background:var(--bg);color:var(--ink);font-family:var(--head);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+  body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 80% at 50% 0%,#000 30%,transparent 75%);pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:40px 24px 80px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:34px;flex-wrap:wrap}
   .brand{font-family:var(--display);font-size:16px;color:var(--ink)}
   .brand span{color:var(--dash)}
   .tag-admin{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);border:1px solid var(--line);padding:4px 10px;border-radius:6px}
@@ -43,28 +32,57 @@
   .field{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:var(--head);font-size:15px;padding:12px 14px;margin-bottom:12px}
   .field::placeholder{color:var(--faint)}
   .field:focus{outline:none;border-color:var(--faint)}
-  .btn{
-    width:100%;font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.06em;
-    background:var(--ink);color:var(--bg);border:none;border-radius:10px;padding:13px;cursor:pointer;transition:opacity .2s;
-  }
+  textarea.field{min-height:110px;resize:vertical;line-height:1.5}
+  select.field{cursor:pointer}
+  .btn{width:100%;font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.06em;background:var(--ink);color:var(--bg);border:none;border-radius:10px;padding:13px;cursor:pointer;transition:opacity .2s}
   .btn:hover{opacity:.85}
   .btn:disabled{opacity:.4;cursor:default}
   .msg{margin-top:14px;font-family:var(--mono);font-size:13px;min-height:18px;color:var(--dash)}
 
-  /* feedback list */
-  .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
-  .panel-head h2{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
-  .count{font-family:var(--mono);font-size:12px;color:var(--faint)}
-  .logout{font-family:var(--mono);font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s}
+  /* subtabs */
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap}
+  .subtab{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);background:transparent;border:1px solid var(--line);padding:8px 15px;border-radius:999px;cursor:pointer;transition:color .2s,background .2s,border-color .2s}
+  .subtab:hover{color:var(--ink);border-color:var(--faint)}
+  .subtab.active{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+  .logout{font-family:var(--mono);font-size:12px;color:var(--muted);background:transparent;border:1px solid var(--line);padding:8px 14px;border-radius:8px;cursor:pointer;transition:color .2s,border-color .2s}
   .logout:hover{color:var(--ink);border-color:var(--faint)}
 
-  .fb{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel-2));border-radius:14px;padding:16px 18px;margin-bottom:12px}
-  .fb-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:8px}
-  .fb-name{font-family:var(--head);font-weight:700;font-size:15px;color:var(--ink)}
-  .fb-time{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
-  .fb-msg{font-size:15px;color:var(--muted);line-height:1.55;white-space:pre-wrap;word-break:break-word}
-  .empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;padding:40px 0}
+  .sec{display:none}
+  .sec.active{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
+  .sec-label{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:30px 0 14px}
+  .sec-label:first-child{margin-top:24px}
+
+  /* card / form box */
+  .box{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel-2));border-radius:14px;padding:18px;margin-bottom:14px}
+  .form-row{display:flex;gap:12px;flex-wrap:wrap}
+  .form-row .field{flex:1;min-width:140px}
+  .form-actions{display:flex;gap:10px;margin-top:4px}
+  .form-actions .btn{width:auto;padding:11px 22px}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .btn-ghost:hover{color:var(--ink);border-color:var(--faint);opacity:1}
+
+  /* item rows */
+  .item{border:1px solid var(--line);background:linear-gradient(180deg,var(--panel),var(--panel-2));border-radius:12px;padding:14px 16px;margin-bottom:10px}
+  .item.left{border-left-width:4px}
+  .item-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:6px}
+  .item-name{font-family:var(--head);font-weight:700;font-size:15px;color:var(--ink)}
+  .item-date{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .item-body{font-size:14px;color:var(--muted);line-height:1.55;white-space:pre-wrap;word-break:break-word}
+  .item-meta{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}
+  .item-actions{display:flex;gap:8px;margin-top:12px}
+  .mini{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:7px;padding:5px 11px;cursor:pointer;transition:color .2s,border-color .2s}
+  .mini:hover{color:var(--ink);border-color:var(--faint)}
+  .mini.danger:hover{color:var(--dash);border-color:var(--dash)}
+  .bookmark{background:transparent;border:none;cursor:pointer;color:var(--faint);padding:2px;display:flex;align-items:center;transition:color .2s,transform .15s}
+  .bookmark:hover{transform:scale(1.15)}
+  .bookmark.on{color:var(--dash)}
+  .bookmark svg{width:18px;height:18px}
+  .pill{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:5px;text-transform:uppercase}
+  .pill.sched{color:#9fb4ff;border:1px solid #3a4a7a;background:rgba(70,90,160,.15)}
+  .empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;padding:30px 0}
+  .hint{font-size:12px;color:var(--faint);margin:-6px 0 12px}
   .hidden{display:none}
 </style>
 </head>
@@ -79,21 +97,76 @@
   <!-- LOGIN -->
   <div id="login" class="login">
     <h1>Sign in</h1>
-    <p>Only Max can read the feedback. Enter your Firebase login.</p>
-    <input id="email" class="field" type="email" placeholder="Email" autocomplete="username">
+    <p>Only Max can manage the site. Enter your password.</p>
     <input id="password" class="field" type="password" placeholder="Password" autocomplete="current-password">
     <button id="signin" class="btn">Sign in</button>
     <div id="loginMsg" class="msg"></div>
   </div>
 
-  <!-- FEEDBACK -->
+  <!-- DASHBOARD -->
   <div id="dashboard" class="hidden">
-    <div class="panel-head">
-      <h2>Feedback</h2>
-      <span id="count" class="count"></span>
+    <div class="top" style="margin-bottom:24px">
+      <div class="subtabs">
+        <button class="subtab active" data-sec="feedback">Feedback</button>
+        <button class="subtab" data-sec="news">News</button>
+        <button class="subtab" data-sec="buildlog">Build Log</button>
+      </div>
       <button id="logout" class="logout">Sign out</button>
     </div>
-    <div id="list"></div>
+
+    <!-- FEEDBACK -->
+    <div id="sec-feedback" class="sec active">
+      <div class="sec-label">Saved</div>
+      <div id="fbSaved"><div class="empty">None saved.</div></div>
+      <div class="sec-label">All</div>
+      <div id="fbAll"><div class="empty">No feedback yet.</div></div>
+    </div>
+
+    <!-- NEWS -->
+    <div id="sec-news" class="sec">
+      <div class="sec-label" id="newsFormLabel">Write news</div>
+      <div class="box">
+        <input id="newsTitle" class="field" type="text" placeholder="Title" maxlength="120">
+        <textarea id="newsBody" class="field" placeholder="Body..." maxlength="3000"></textarea>
+        <div class="hint">Publish date: set today to post now, or a future date to schedule it (it appears on the site automatically on that day).</div>
+        <input id="newsDate" class="field" type="date">
+        <div class="form-actions">
+          <button id="newsSave" class="btn">Post</button>
+          <button id="newsCancel" class="btn btn-ghost hidden">Cancel edit</button>
+        </div>
+      </div>
+      <div class="sec-label">Posts</div>
+      <div id="newsList"><div class="empty">No news yet.</div></div>
+    </div>
+
+    <!-- BUILD LOG -->
+    <div id="sec-buildlog" class="sec">
+      <div class="sec-label" id="blFormLabel">Add entry</div>
+      <div class="box">
+        <div class="form-row">
+          <input id="blDate" class="field" type="date">
+          <select id="blType" class="field">
+            <option value="game">Game (green)</option>
+            <option value="update">Site update (blue)</option>
+            <option value="version">Version (pink)</option>
+            <option value="account">Account (orange)</option>
+          </select>
+        </div>
+        <input id="blTitle" class="field" type="text" placeholder="Title (e.g. Max Dash released)" maxlength="120">
+        <div class="form-row">
+          <input id="blVersion" class="field" type="text" placeholder="Version (optional, e.g. v1.1)" maxlength="20">
+          <input id="blHours" class="field" type="number" placeholder="Hours (optional, e.g. 16)" min="0" step="1">
+          <input id="blIcon" class="field" type="text" placeholder="Icon emoji (optional, e.g. 🎮)" maxlength="4">
+        </div>
+        <textarea id="blDesc" class="field" placeholder="One-line description (optional)" maxlength="300"></textarea>
+        <div class="form-actions">
+          <button id="blSave" class="btn">Add</button>
+          <button id="blCancel" class="btn btn-ghost hidden">Cancel edit</button>
+        </div>
+      </div>
+      <div class="sec-label">Entries</div>
+      <div id="blList"><div class="empty">No entries yet.</div></div>
+    </div>
   </div>
 
 </div>
@@ -103,92 +176,222 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <script>
-  /* ============================================================
-     ▼▼▼ index.html と「同じ」Firebase 設定をここに貼ってください ▼▼▼
-     ============================================================ */
   const FIREBASE_CONFIG = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBptkn2T7jRWoGoz-aIPmweKJHxmSl0dQA",
+    authDomain: "maxgames-bfa16.firebaseapp.com",
+    databaseURL: "https://maxgames-bfa16-default-rtdb.firebaseio.com",
+    projectId: "maxgames-bfa16",
+    storageBucket: "maxgames-bfa16.firebasestorage.app",
+    messagingSenderId: "514936917371",
+    appId: "1:514936917371:web:96b43b51cbcad50b7341de",
+    measurementId: "G-E58KK6NNTV"
   };
-  /* ▲▲▲ ここまで ▲▲▲ */
+  /* Authentication に登録したダミーメール（秘密ではないので書いてOK） */
+  const ADMIN_EMAIL = "max@maxgames.app";
 
-  var loginEl = document.getElementById('login');
-  var dashEl = document.getElementById('dashboard');
-  var loginMsg = document.getElementById('loginMsg');
-  var listEl = document.getElementById('list');
-  var countEl = document.getElementById('count');
+  var loginEl=document.getElementById('login'), dashEl=document.getElementById('dashboard'),
+      loginMsg=document.getElementById('loginMsg');
 
   var CONFIGURED = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf("YOUR_") !== 0;
-  if (!CONFIGURED) {
-    loginMsg.textContent = 'Firebase is not configured yet. Paste your config above.';
-  }
+  if (!CONFIGURED) loginMsg.textContent = 'Firebase is not configured yet.';
 
-  var auth = null, db = null;
+  var auth=null, db=null;
   if (CONFIGURED) {
-    try {
-      firebase.initializeApp(FIREBASE_CONFIG);
-      auth = firebase.auth();
-      db = firebase.database();
-    } catch (e) { console.warn(e); loginMsg.textContent = 'Firebase init failed.'; }
+    try { firebase.initializeApp(FIREBASE_CONFIG); auth=firebase.auth(); db=firebase.database(); }
+    catch(e){ console.warn(e); loginMsg.textContent='Firebase init failed.'; }
   }
 
-  /* sign in */
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+  function fmtDate(s){ if(!s) return ''; var p=String(s).split('-'); return p.length===3 ? p[0]+'/'+p[1]+'/'+p[2] : s; }
+  function fmtTime(t){ return t ? new Date(t).toLocaleString() : ''; }
+  var TYPE_COLOR={game:'var(--t-game)',update:'var(--t-update)',version:'var(--t-version)',account:'var(--t-account)'};
+  var TYPE_LABEL={game:'Game',update:'Update',version:'Version',account:'Account'};
+
+  /* ---- login ---- */
   document.getElementById('signin').addEventListener('click', function(){
-    if (!auth) return;
-    var email = document.getElementById('email').value.trim();
-    var pass = document.getElementById('password').value;
-    loginMsg.textContent = 'Signing in...';
-    auth.signInWithEmailAndPassword(email, pass)
-      .catch(function(err){ loginMsg.textContent = err.message; });
+    if(!auth) return;
+    var pass=document.getElementById('password').value;
+    loginMsg.textContent='Signing in...';
+    auth.signInWithEmailAndPassword(ADMIN_EMAIL, pass).catch(function(err){ loginMsg.textContent=err.message; });
   });
-  document.getElementById('password').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') document.getElementById('signin').click();
+  document.getElementById('password').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('signin').click(); });
+  document.getElementById('logout').addEventListener('click', function(){ if(auth) auth.signOut(); });
+
+  /* ---- subtabs ---- */
+  document.querySelectorAll('.subtab').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.subtab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.sec').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      document.getElementById('sec-'+b.dataset.sec).classList.add('active');
+    });
   });
 
-  /* logout */
-  document.getElementById('logout').addEventListener('click', function(){
-    if (auth) auth.signOut();
-  });
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, function(c){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  /* ============ FEEDBACK ============ */
+  function renderFeedback(items){
+    var saved=items.filter(function(f){return f.saved;});
+    var savedEl=document.getElementById('fbSaved'), allEl=document.getElementById('fbAll');
+    function row(f){
+      return '<div class="item"><div class="item-top"><span class="item-name">'+esc(f.name||'anon')+
+        '</span><span style="display:flex;align-items:center;gap:10px"><span class="item-date">'+esc(fmtTime(f.time))+
+        '</span><button class="bookmark '+(f.saved?'on':'')+'" data-id="'+f._id+'" data-saved="'+(f.saved?'1':'0')+'" title="Save">'+
+        '<svg viewBox="0 0 24 24" fill="'+(f.saved?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-5-7 5V4a1 1 0 0 1 1-1z"/></svg>'+
+        '</button></span></div><div class="item-body">'+esc(f.message)+'</div></div>';
+    }
+    savedEl.innerHTML = saved.length ? saved.map(row).join('') : '<div class="empty">None saved.</div>';
+    allEl.innerHTML = items.length ? items.map(row).join('') : '<div class="empty">No feedback yet.</div>';
+    document.querySelectorAll('.bookmark').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var id=btn.dataset.id, cur=btn.dataset.saved==='1';
+        db.ref('feedback/'+id+'/saved').set(!cur);
+      });
+    });
+  }
+  function loadFeedback(){
+    db.ref('feedback').on('value', function(snap){
+      var items=[]; snap.forEach(function(c){ var v=c.val(); v._id=c.key; items.push(v); });
+      items.sort(function(a,b){ return (b.time||0)-(a.time||0); });
+      renderFeedback(items);
     });
   }
 
-  function render(items){
-    if (!items.length){ listEl.innerHTML = '<div class="empty">No feedback yet.</div>'; countEl.textContent = ''; return; }
-    countEl.textContent = items.length + (items.length === 1 ? ' message' : ' messages');
-    listEl.innerHTML = items.map(function(f){
-      var d = f.time ? new Date(f.time).toLocaleString() : '';
-      return '<div class="fb"><div class="fb-top"><span class="fb-name">' +
-        escapeHtml(f.name || 'anon') + '</span><span class="fb-time">' +
-        escapeHtml(d) + '</span></div><div class="fb-msg">' +
-        escapeHtml(f.message || '') + '</div></div>';
-    }).join('');
+  /* ============ NEWS ============ */
+  var newsEditId=null;
+  function resetNewsForm(){
+    newsEditId=null;
+    document.getElementById('newsTitle').value='';
+    document.getElementById('newsBody').value='';
+    document.getElementById('newsDate').value=todayStr();
+    document.getElementById('newsSave').textContent='Post';
+    document.getElementById('newsFormLabel').textContent='Write news';
+    document.getElementById('newsCancel').classList.add('hidden');
+  }
+  document.getElementById('newsCancel').addEventListener('click', resetNewsForm);
+  document.getElementById('newsSave').addEventListener('click', function(){
+    var title=document.getElementById('newsTitle').value.trim();
+    var body=document.getElementById('newsBody').value.trim();
+    var date=document.getElementById('newsDate').value || todayStr();
+    if(!title){ alert('Title is required.'); return; }
+    if(newsEditId){
+      db.ref('news/'+newsEditId).update({ title:title, body:body, publishDate:date }).then(resetNewsForm);
+    } else {
+      db.ref('news').push({ title:title, body:body, publishDate:date, createdAt:Date.now() }).then(resetNewsForm);
+    }
+  });
+  function loadNews(){
+    db.ref('news').on('value', function(snap){
+      var items=[]; snap.forEach(function(c){ var v=c.val(); v._id=c.key; items.push(v); });
+      items.sort(function(a,b){ var pa=a.publishDate||'',pb=b.publishDate||''; if(pa!==pb) return pb<pa?-1:1; return (b.createdAt||0)-(a.createdAt||0); });
+      var el=document.getElementById('newsList');
+      if(!items.length){ el.innerHTML='<div class="empty">No news yet.</div>'; return; }
+      var today=todayStr();
+      el.innerHTML=items.map(function(n){
+        var sched = (n.publishDate||'') > today;
+        return '<div class="item"><div class="item-top"><span class="item-name">'+esc(n.title)+
+          (sched?' <span class="pill sched">scheduled</span>':'')+
+          '</span><span class="item-date">'+esc(fmtDate(n.publishDate))+'</span></div>'+
+          '<div class="item-body">'+esc(n.body)+'</div>'+
+          '<div class="item-actions"><button class="mini" data-edit="'+n._id+'">Edit</button>'+
+          '<button class="mini danger" data-del="'+n._id+'">Delete</button></div></div>';
+      }).join('');
+      el.querySelectorAll('[data-edit]').forEach(function(b){ b.addEventListener('click',function(){
+        var n=items.find(function(x){return x._id===b.dataset.edit;}); if(!n) return;
+        newsEditId=n._id;
+        document.getElementById('newsTitle').value=n.title||'';
+        document.getElementById('newsBody').value=n.body||'';
+        document.getElementById('newsDate').value=n.publishDate||todayStr();
+        document.getElementById('newsSave').textContent='Update';
+        document.getElementById('newsFormLabel').textContent='Edit news';
+        document.getElementById('newsCancel').classList.remove('hidden');
+        window.scrollTo({top:0,behavior:'smooth'});
+      }); });
+      el.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){
+        if(confirm('Delete this post?')) db.ref('news/'+b.dataset.del).remove();
+      }); });
+    });
   }
 
-  /* auth state */
+  /* ============ BUILD LOG ============ */
+  var blEditId=null;
+  function resetBlForm(){
+    blEditId=null;
+    document.getElementById('blDate').value=todayStr();
+    document.getElementById('blType').value='game';
+    document.getElementById('blTitle').value='';
+    document.getElementById('blVersion').value='';
+    document.getElementById('blHours').value='';
+    document.getElementById('blIcon').value='';
+    document.getElementById('blDesc').value='';
+    document.getElementById('blSave').textContent='Add';
+    document.getElementById('blFormLabel').textContent='Add entry';
+    document.getElementById('blCancel').classList.add('hidden');
+  }
+  document.getElementById('blCancel').addEventListener('click', resetBlForm);
+  document.getElementById('blSave').addEventListener('click', function(){
+    var title=document.getElementById('blTitle').value.trim();
+    var date=document.getElementById('blDate').value || todayStr();
+    if(!title){ alert('Title is required.'); return; }
+    var data={
+      date:date, type:document.getElementById('blType').value, title:title,
+      version:document.getElementById('blVersion').value.trim(),
+      hours:document.getElementById('blHours').value.trim(),
+      icon:document.getElementById('blIcon').value.trim(),
+      desc:document.getElementById('blDesc').value.trim()
+    };
+    if(blEditId){ db.ref('buildlog/'+blEditId).update(data).then(resetBlForm); }
+    else { data.createdAt=Date.now(); db.ref('buildlog').push(data).then(resetBlForm); }
+  });
+  function loadBuildlog(){
+    db.ref('buildlog').on('value', function(snap){
+      var items=[]; snap.forEach(function(c){ var v=c.val(); v._id=c.key; items.push(v); });
+      items.sort(function(a,b){ var da=a.date||'',dbb=b.date||''; if(da!==dbb) return dbb<da?-1:1; return (b.createdAt||0)-(a.createdAt||0); });
+      var el=document.getElementById('blList');
+      if(!items.length){ el.innerHTML='<div class="empty">No entries yet.</div>'; return; }
+      el.innerHTML=items.map(function(it){
+        var color=TYPE_COLOR[it.type]||'var(--line)';
+        var meta=[TYPE_LABEL[it.type]||'', fmtDate(it.date)];
+        if(it.version) meta.push(esc(it.version));
+        if(it.hours) meta.push('~'+esc(it.hours)+'h');
+        return '<div class="item left" style="border-left-color:'+color+'"><div class="item-top">'+
+          '<span class="item-name">'+(it.icon?esc(it.icon)+' ':'')+esc(it.title)+'</span></div>'+
+          (it.desc?'<div class="item-body">'+esc(it.desc)+'</div>':'')+
+          '<div class="item-meta">'+meta.filter(Boolean).map(esc).join('<span style="opacity:.4">·</span>')+'</div>'+
+          '<div class="item-actions"><button class="mini" data-edit="'+it._id+'">Edit</button>'+
+          '<button class="mini danger" data-del="'+it._id+'">Delete</button></div></div>';
+      }).join('');
+      el.querySelectorAll('[data-edit]').forEach(function(b){ b.addEventListener('click',function(){
+        var it=items.find(function(x){return x._id===b.dataset.edit;}); if(!it) return;
+        blEditId=it._id;
+        document.getElementById('blDate').value=it.date||todayStr();
+        document.getElementById('blType').value=it.type||'game';
+        document.getElementById('blTitle').value=it.title||'';
+        document.getElementById('blVersion').value=it.version||'';
+        document.getElementById('blHours').value=it.hours||'';
+        document.getElementById('blIcon').value=it.icon||'';
+        document.getElementById('blDesc').value=it.desc||'';
+        document.getElementById('blSave').textContent='Update';
+        document.getElementById('blFormLabel').textContent='Edit entry';
+        document.getElementById('blCancel').classList.remove('hidden');
+        window.scrollTo({top:0,behavior:'smooth'});
+      }); });
+      el.querySelectorAll('[data-del]').forEach(function(b){ b.addEventListener('click',function(){
+        if(confirm('Delete this entry?')) db.ref('buildlog/'+b.dataset.del).remove();
+      }); });
+    });
+  }
+
+  /* ---- auth state ---- */
   if (auth) {
     auth.onAuthStateChanged(function(user){
       if (user) {
         loginEl.classList.add('hidden');
         dashEl.classList.remove('hidden');
-        db.ref('feedback').on('value', function(snap){
-          var items = [];
-          snap.forEach(function(c){ items.push(c.val()); });
-          items.sort(function(a,b){ return (b.time||0) - (a.time||0); }); // newest first
-          render(items);
-        });
+        resetNewsForm(); resetBlForm();
+        loadFeedback(); loadNews(); loadBuildlog();
       } else {
         dashEl.classList.add('hidden');
         loginEl.classList.remove('hidden');
-        loginMsg.textContent = CONFIGURED ? '' : loginMsg.textContent;
       }
     });
   }
