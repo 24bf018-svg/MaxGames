@@ -4,103 +4,71 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MAX GAMES — Probably fun.</title>
-<meta name="description" content="Browser games built one a day. Tetris, Suika, voxel sandbox and climbing — all playable right now, no install.">
+<meta name="description" content="Browser games built one a day. Tetris, Suika, voxel sandbox, climbing and more — all playable right now, no install.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0a0a12;
-    --bg-2:#10101c;
-    --panel:#15151f;
-    --panel-2:#1b1b28;
-    --line:#272736;
-    --ink:#ecedf5;
-    --muted:#8a8aa0;
-    --faint:#5a5a72;
-
-    --suika:#ff7a4d;
-    --tetris:#46c8ff;
-    --voxel:#6ad06a;
-    --climb:#a684ff;
-
-    --display:"Press Start 2P", monospace;
-    --head:"Space Grotesk", system-ui, sans-serif;
-    --mono:"JetBrains Mono", monospace;
+    --bg:#0a0a12;--bg-2:#10101c;--panel:#15151f;--panel-2:#1b1b28;
+    --line:#272736;--ink:#ecedf5;--muted:#8a8aa0;--faint:#5a5a72;
+    --suika:#ff7a4d;--tetris:#46c8ff;--voxel:#6ad06a;--climb:#a684ff;--dash:#ff4d8a;
+    /* build log type colors */
+    --t-game:#6ad06a;--t-update:#46c8ff;--t-version:#ff4d8a;--t-account:#ff7a4d;
+    --display:"Press Start 2P",monospace;
+    --head:"Space Grotesk",system-ui,sans-serif;
+    --mono:"JetBrains Mono",monospace;
   }
-
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
-  body{
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--head);
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-
-  body::before{
-    content:"";
-    position:fixed;inset:0;
-    background-image:
-      linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
-      linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
-    background-size:42px 42px;
-    mask-image:radial-gradient(ellipse 120% 80% at 50% 0%,#000 30%,transparent 75%);
-    pointer-events:none;z-index:0;
-  }
-
+  body{background:var(--bg);color:var(--ink);font-family:var(--head);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);background-size:42px 42px;mask-image:radial-gradient(ellipse 120% 80% at 50% 0%,#000 30%,transparent 75%);pointer-events:none;z-index:0}
   .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 24px}
 
-  /* ---------- HERO ---------- */
-  header{padding:64px 0 28px;text-align:center}
+  /* ---------- TOP BAR (socials) ---------- */
+  .topbar{display:flex;justify-content:center;align-items:center;padding:22px 0 0}
+  .socials{display:flex;gap:10px;align-items:center}
+  .social-btn{
+    width:34px;height:34px;display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--line);border-radius:9px;color:var(--muted);
+    transition:color .2s,border-color .2s,transform .2s;
+  }
+  .social-btn:hover{color:var(--ink);border-color:var(--faint);transform:translateY(-2px)}
+  .social-btn svg{width:17px;height:17px;display:block}
+  .social-btn.ig:hover{color:#e1306c;border-color:#e1306c}
+  .social-btn.fb:hover{color:#1877f2;border-color:#1877f2}
+  .social-btn.yt:hover{color:#ff0000;border-color:#ff0000}
+  .social-btn.ln:hover{color:#06c755;border-color:#06c755}
 
-  .eyebrow{
-    font-family:var(--mono);
-    font-size:12px;letter-spacing:.28em;text-transform:uppercase;
-    color:var(--faint);
-    display:inline-flex;align-items:center;gap:10px;
-    margin-bottom:34px;
-  }
-  .eyebrow .blink{
-    width:7px;height:7px;background:var(--voxel);border-radius:1px;
-    animation:blink 1.2s steps(2) infinite;
-  }
+  /* ---------- TABS ---------- */
+  .tabs{display:flex;justify-content:center;gap:8px;padding:18px 0 0;flex-wrap:wrap}
+  .tab-btn{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.07em;color:var(--muted);background:transparent;border:1px solid var(--line);padding:9px 18px;border-radius:999px;cursor:pointer;transition:color .25s,background .25s,border-color .25s}
+  .tab-btn:hover{color:var(--ink);border-color:var(--faint)}
+  .tab-btn.active{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+
+  .page{display:none}
+  .page.active{display:block;animation:fade .4s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  /* ---------- HERO ---------- */
+  header{padding:40px 0 28px;text-align:center}
+  .eyebrow-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:34px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--faint);display:inline-flex;align-items:center;gap:10px}
+  .eyebrow .blink{width:7px;height:7px;background:var(--voxel);border-radius:1px;animation:blink 1.2s steps(2) infinite}
   @keyframes blink{50%{opacity:.15}}
+  .views{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--muted);display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line);border-radius:999px;padding:5px 13px;white-space:nowrap}
+  .views #viewsNum{color:var(--voxel);font-weight:700}
 
   .tower{display:flex;justify-content:center;margin-bottom:8px}
   .tower svg{width:148px;height:auto;overflow:visible}
   .cube{transform-origin:center;animation:drop .6s cubic-bezier(.2,1.3,.4,1) backwards}
-  .cube.c1{animation-delay:.05s}
-  .cube.c2{animation-delay:.22s}
-  .cube.c3{animation-delay:.39s}
-  .cube.c4{animation-delay:.56s}
+  .cube.c1{animation-delay:.05s}.cube.c2{animation-delay:.22s}.cube.c3{animation-delay:.39s}.cube.c4{animation-delay:.56s}
   @keyframes drop{from{opacity:0;transform:translateY(-40px)}to{opacity:1;transform:translateY(0)}}
 
-  h1{
-    font-family:var(--display);
-    font-size:clamp(30px,8vw,62px);
-    line-height:1.04;
-    letter-spacing:.01em;
-    margin:14px 0 18px;
-    background:linear-gradient(180deg,#fff 0%,#c8c8e0 100%);
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    text-shadow:0 0 40px rgba(120,120,255,.12);
-  }
-  .tagline{
-    font-size:clamp(15px,2.4vw,18px);
-    color:var(--muted);max-width:34ch;margin:0 auto;
-  }
+  h1{font-family:var(--display);font-size:clamp(30px,8vw,62px);line-height:1.04;letter-spacing:.01em;margin:14px 0 18px;background:linear-gradient(180deg,#fff 0%,#c8c8e0 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 40px rgba(120,120,255,.12)}
+  .tagline{font-size:clamp(15px,2.4vw,18px);color:var(--muted);max-width:34ch;margin:0 auto}
   .tagline b{color:var(--ink);font-weight:600}
-
-  .stats{
-    display:flex;justify-content:center;gap:0;flex-wrap:wrap;
-    margin:38px auto 0;
-    border:1px solid var(--line);border-radius:14px;
-    background:linear-gradient(180deg,var(--panel),var(--bg-2));
-    max-width:560px;overflow:hidden;
-  }
+  .stats{display:flex;justify-content:center;gap:0;flex-wrap:wrap;margin:38px auto 0;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--bg-2));max-width:560px;overflow:hidden}
   .stat{flex:1;min-width:120px;padding:18px 14px;position:relative}
   .stat + .stat{border-left:1px solid var(--line)}
   .stat .num{font-family:var(--display);font-size:22px;color:var(--ink)}
@@ -108,291 +76,391 @@
   .stat .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:8px}
 
   /* ---------- GAMES ---------- */
-  .section-head{
-    display:flex;align-items:baseline;justify-content:space-between;
-    margin:72px 0 26px;gap:16px;flex-wrap:wrap;
-  }
-  .section-head h2{
-    font-family:var(--mono);font-size:13px;font-weight:700;
-    letter-spacing:.24em;text-transform:uppercase;color:var(--muted);
-  }
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin:56px 0 26px;gap:16px;flex-wrap:wrap}
+  .section-head h2{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
   .section-head .rule{flex:1;height:1px;background:var(--line);min-width:30px}
-
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-
-  .card{
-    position:relative;
-    background:linear-gradient(180deg,var(--panel),var(--panel-2));
-    border:1px solid var(--line);
-    border-radius:18px;
-    overflow:hidden;
-    display:flex;flex-direction:column;
-    text-decoration:none;color:inherit;
-    transition:transform .35s cubic-bezier(.2,.9,.3,1),border-color .35s,box-shadow .35s;
-  }
-  .card::after{
-    content:"";position:absolute;inset:0;border-radius:18px;
-    box-shadow:inset 0 0 0 1px transparent;
-    transition:box-shadow .35s;pointer-events:none;
-  }
+  .card{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .35s cubic-bezier(.2,.9,.3,1),border-color .35s,box-shadow .35s}
+  .card::after{content:"";position:absolute;inset:0;border-radius:18px;box-shadow:inset 0 0 0 1px transparent;transition:box-shadow .35s;pointer-events:none}
   .card:hover{transform:translateY(-6px)}
   .card:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
-
-  .preview{
-    position:relative;aspect-ratio:16/9;
-    display:flex;align-items:center;justify-content:center;
-    overflow:hidden;border-bottom:1px solid var(--line);
-  }
+  .preview{position:relative;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid var(--line)}
   .preview svg{width:100%;height:100%;display:block}
-  .badge{
-    position:absolute;top:12px;left:12px;
-    font-family:var(--mono);font-size:11px;font-weight:700;
-    letter-spacing:.08em;
-    padding:5px 9px;border-radius:6px;
-    background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
-    border:1px solid rgba(255,255,255,.12);
-  }
-  .num-tag{
-    position:absolute;top:12px;right:14px;
-    font-family:var(--display);font-size:13px;color:rgba(255,255,255,.32);
-  }
-
+  .badge{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;padding:5px 9px;border-radius:6px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,.12)}
+  .num-tag{position:absolute;top:12px;right:14px;font-family:var(--display);font-size:13px;color:rgba(255,255,255,.32)}
   .body{padding:20px 22px 22px}
-  .body h3{
-    font-family:var(--head);font-size:20px;font-weight:700;
-    display:flex;align-items:center;gap:9px;margin-bottom:6px;color:var(--ink);
-  }
+  .body h3{font-family:var(--head);font-size:20px;font-weight:700;display:flex;align-items:center;gap:9px;margin-bottom:6px;color:var(--ink)}
   .body .dot{width:9px;height:9px;border-radius:2px;flex:none}
   .body p{font-size:14px;color:var(--muted);line-height:1.55}
-
   .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
-  .tag{
-    font-family:var(--mono);font-size:11px;color:var(--faint);
-    border:1px solid var(--line);border-radius:5px;padding:3px 8px;
-  }
-
-  .play{
-    margin-top:18px;display:flex;align-items:center;gap:8px;
-    font-family:var(--mono);font-size:13px;font-weight:700;
-    letter-spacing:.04em;color:var(--ink);
-  }
+  .tag{font-family:var(--mono);font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:5px;padding:3px 8px}
+  .play{margin-top:18px;display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--ink)}
   .play .arrow{transition:transform .3s}
   .card:hover .play .arrow{transform:translateX(4px)}
+  .card.suika:hover{border-color:var(--suika)}.card.suika:hover::after{box-shadow:inset 0 0 40px -20px var(--suika)}.card.suika .dot,.card.suika .play{color:var(--suika)}
+  .card.tetris:hover{border-color:var(--tetris)}.card.tetris:hover::after{box-shadow:inset 0 0 40px -20px var(--tetris)}.card.tetris .dot,.card.tetris .play{color:var(--tetris)}
+  .card.voxel:hover{border-color:var(--voxel)}.card.voxel:hover::after{box-shadow:inset 0 0 40px -20px var(--voxel)}.card.voxel .dot,.card.voxel .play{color:var(--voxel)}
+  .card.climb:hover{border-color:var(--climb)}.card.climb:hover::after{box-shadow:inset 0 0 40px -20px var(--climb)}.card.climb .dot,.card.climb .play{color:var(--climb)}
+  .card.dash:hover{border-color:var(--dash)}.card.dash:hover::after{box-shadow:inset 0 0 40px -20px var(--dash)}.card.dash .dot,.card.dash .play{color:var(--dash)}
 
-  .card.suika:hover{border-color:var(--suika)}
-  .card.suika:hover::after{box-shadow:inset 0 0 40px -20px var(--suika)}
-  .card.suika .dot,.card.suika .play{color:var(--suika)}
-  .card.tetris:hover{border-color:var(--tetris)}
-  .card.tetris:hover::after{box-shadow:inset 0 0 40px -20px var(--tetris)}
-  .card.tetris .dot,.card.tetris .play{color:var(--tetris)}
-  .card.voxel:hover{border-color:var(--voxel)}
-  .card.voxel:hover::after{box-shadow:inset 0 0 40px -20px var(--voxel)}
-  .card.voxel .dot,.card.voxel .play{color:var(--voxel)}
-  .card.climb:hover{border-color:var(--climb)}
-  .card.climb:hover::after{box-shadow:inset 0 0 40px -20px var(--climb)}
-  .card.climb .dot,.card.climb .play{color:var(--climb)}
+  /* ---------- shared section label ---------- */
+  .info-block{max-width:680px;margin:0 auto 44px;padding-top:40px}
+  .info-label{font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  .info-sub{font-size:13px;color:var(--faint);margin:-8px 0 22px}
 
-  /* ---------- WIP ---------- */
-  .wip{
-    margin-top:24px;
-    border:1px dashed var(--line);border-radius:16px;
-    padding:22px 24px;
-    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    background:repeating-linear-gradient(135deg,transparent,transparent 12px,rgba(255,255,255,.012) 12px,rgba(255,255,255,.012) 24px);
+  /* ---------- INFORMATION ---------- */
+  .about-text{font-size:17px;color:var(--ink);line-height:1.75}
+  .hours-hero{max-width:680px;text-align:center;margin:8px auto 0;padding:44px 24px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--panel),var(--bg-2));position:relative;overflow:hidden}
+  .hours-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 70% 90% at 50% 120%,rgba(255,77,138,.14),transparent 70%);pointer-events:none}
+  .hours-num{position:relative;font-family:var(--display);font-size:clamp(46px,13vw,90px);line-height:1;background:linear-gradient(180deg,#fff,#9a9ad0);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 50px rgba(120,120,255,.18)}
+  .hours-num span{-webkit-text-fill-color:var(--dash);color:var(--dash)}
+  .hours-lbl{position:relative;font-family:var(--mono);font-size:13px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-top:14px}
+  .hours-sub{position:relative;font-size:15px;color:var(--faint);margin-top:14px;font-style:italic}
+
+  /* ---------- BUILD LOG (YouTube-card style) ---------- */
+  .bl-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+  .bl-card{display:flex;gap:16px;border:1px solid var(--line);border-left-width:4px;border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--panel-2));padding:14px;transition:transform .25s,box-shadow .25s}
+  .bl-card:hover{transform:translateY(-3px)}
+  .bl-thumb{width:128px;min-width:128px;aspect-ratio:16/10;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:38px;overflow:hidden;border:1px solid rgba(255,255,255,.06)}
+  .bl-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .bl-title{font-family:var(--head);font-size:18px;font-weight:700;color:var(--ink);line-height:1.25}
+  .bl-meta{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:6px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .bl-meta .ver{color:var(--ink);font-weight:700}
+  .bl-desc{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.5}
+  .bl-empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;padding:40px 0}
+  @media(max-width:560px){
+    .bl-thumb{width:92px;min-width:92px;font-size:28px}
   }
-  .wip .spin{
-    width:38px;height:38px;flex:none;border-radius:9px;
-    background:linear-gradient(135deg,#2a3550,#1a2238);
-    border:1px solid var(--line);
-    display:flex;align-items:center;justify-content:center;font-size:20px;
-  }
-  .wip .spin span{display:inline-block;animation:spin 4s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .wip .txt{flex:1;min-width:200px}
-  .wip h4{font-family:var(--head);font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
-  .wip h4 .chip{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:#9fb4ff;border:1px solid #3a4a7a;background:rgba(70,90,160,.15);padding:2px 7px;border-radius:5px}
-  .wip p{font-size:13px;color:var(--muted);margin-top:4px}
+
+  /* ---------- NEWS ---------- */
+  .news-list{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+  .news-item{border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,var(--panel),var(--panel-2));padding:20px 22px}
+  .news-date{font-family:var(--mono);font-size:12px;color:var(--dash);letter-spacing:.06em;margin-bottom:6px}
+  .news-title{font-family:var(--head);font-size:19px;font-weight:700;color:var(--ink);margin-bottom:8px}
+  .news-body{font-size:15px;color:var(--muted);line-height:1.6;white-space:pre-wrap}
+  .news-empty{text-align:center;color:var(--faint);font-family:var(--mono);font-size:13px;padding:40px 0}
+
+  /* ---------- FEEDBACK ---------- */
+  .fb-wrap{max-width:560px;margin:0 auto;padding-top:40px}
+  .fb-intro{font-size:14px;color:var(--muted);margin:10px 0 22px;line-height:1.6}
+  .fb-input,.fb-textarea{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:10px;color:var(--ink);font-family:var(--head);font-size:15px;padding:12px 14px;margin-bottom:12px}
+  .fb-textarea{min-height:150px;resize:vertical;line-height:1.5}
+  .fb-input::placeholder,.fb-textarea::placeholder{color:var(--faint)}
+  .fb-input:focus,.fb-textarea:focus{outline:none;border-color:var(--faint)}
+  .fb-send{font-family:var(--mono);font-weight:700;font-size:14px;letter-spacing:.06em;background:var(--ink);color:var(--bg);border:none;border-radius:10px;padding:12px 30px;cursor:pointer;transition:opacity .2s}
+  .fb-send:hover{opacity:.85}
+  .fb-send:disabled{opacity:.4;cursor:default}
+  .fb-status{margin-top:16px;font-family:var(--mono);font-size:13px;min-height:18px}
+  .fb-status.ok{color:var(--voxel)}.fb-status.err{color:var(--dash)}
 
   /* ---------- FOOTER ---------- */
-  footer{
-    margin:80px 0 56px;padding-top:30px;border-top:1px solid var(--line);
-    display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
-  }
+  footer{margin:80px 0 56px;padding-top:30px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
   footer .sig{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.1em}
   footer .sig b{color:var(--muted)}
   footer a{color:var(--muted);text-decoration:none;font-family:var(--mono);font-size:12px}
   footer a:hover{color:var(--ink)}
 
-  @media(max-width:640px){
-    .grid{grid-template-columns:1fr}
-    header{padding:48px 0 20px}
-    .stat .num{font-size:18px}
-  }
-  @media(prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
-    html{scroll-behavior:auto}
-  }
+  @media(max-width:640px){.grid{grid-template-columns:1fr}header{padding:28px 0 20px}.stat .num{font-size:18px}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- ===== HERO ===== -->
-  <header>
-    <div class="eyebrow"><span class="blink"></span>It's free so just play</div>
-
-    <div class="tower" aria-hidden="true">
-      <svg viewBox="0 0 120 150">
-        <g class="cube c1">
-          <polygon points="60,96 100,116 60,136 20,116" fill="#ff7a4d"/>
-          <polygon points="20,116 60,136 60,150 20,130" fill="#c4502b"/>
-          <polygon points="100,116 60,136 60,150 100,130" fill="#e0613a"/>
-        </g>
-        <g class="cube c2">
-          <polygon points="60,72 100,92 60,112 20,92" fill="#46c8ff"/>
-          <polygon points="20,92 60,112 60,126 20,106" fill="#2a82b0"/>
-          <polygon points="100,92 60,112 60,126 100,106" fill="#369ad4"/>
-        </g>
-        <g class="cube c3">
-          <polygon points="60,48 100,68 60,88 20,68" fill="#6ad06a"/>
-          <polygon points="20,68 60,88 60,102 20,82" fill="#3f8a3f"/>
-          <polygon points="100,68 60,88 60,102 100,82" fill="#52a852"/>
-        </g>
-        <g class="cube c4">
-          <polygon points="60,24 100,44 60,64 20,44" fill="#a684ff"/>
-          <polygon points="20,44 60,64 60,78 20,58" fill="#6a4fb0"/>
-          <polygon points="100,44 60,64 60,78 100,58" fill="#8366d4"/>
-        </g>
-      </svg>
+  <!-- ===== SOCIALS ===== -->
+  <div class="topbar">
+    <div class="socials">
+      <!-- アカウントを作ったら href="#" を各SNSのURLに変えてください -->
+      <a class="social-btn ig" href="#" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <a class="social-btn fb" href="#" target="_blank" rel="noopener" aria-label="Facebook" title="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V7c0-1 .3-1.5 1.6-1.5H17V2.5h-2.4C11.8 2.5 11 4 11 6.4V9H8.5v3H11v9.5h3V12h2.3l.4-3H14z"/></svg>
+      </a>
+      <a class="social-btn yt" href="#" target="_blank" rel="noopener" aria-label="YouTube" title="YouTube">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="6" width="19" height="12" rx="3.5" fill="currentColor"/><path d="M10.5 9.2v5.6l4.8-2.8z" fill="var(--bg)"/></svg>
+      </a>
+      <a class="social-btn ln" href="#" target="_blank" rel="noopener" aria-label="LINE" title="公式LINE">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.8 3 2.5 6.4 2.5 10.6c0 3.8 3.4 7 8 7.6.3.1.7.2.8.5.1.3.1.7 0 1l-.1.8c0 .2-.2.9.8.5s5.3-3.1 7.2-5.3c1.3-1.4 1.9-2.9 1.9-5.1C21.5 6.4 17.2 3 12 3z"/><path d="M7.3 9.2v3.3M7.3 12.5H9M10.6 9.2v3.3M16.7 9.2H15v3.3h1.7M15 10.8h1.4M12.6 9.2l1.5 3.3V9.2" stroke="var(--bg)" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
     </div>
-
-    <h1>MAX<br>GAMES</h1>
-    <p class="tagline"><b>Probably fun.</b><br>Browser games you can play right now.</p>
-
-    <div class="stats">
-      <div class="stat"><div class="num">4<span>games</span></div><div class="lbl">Now live</div></div>
-      <div class="stat"><div class="num" style="font-family:var(--mono);font-weight:700">&#8734;</div><div class="lbl">In progress</div></div>
-    </div>
-  </header>
-
-  <!-- ===== GAMES ===== -->
-  <div class="section-head">
-    <h2>Playable</h2><span class="rule"></span>
   </div>
 
-  <div class="grid">
+  <!-- ===== TABS ===== -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-page="games">Games</button>
+    <button class="tab-btn" data-page="buildlog">Build Log</button>
+    <button class="tab-btn" data-page="info">Information</button>
+    <button class="tab-btn" data-page="feedback">Feedback</button>
+    <button class="tab-btn" data-page="news">News</button>
+  </nav>
 
-    <!-- SUIKA -->
-    <a class="card suika" href="https://24bf018-svg.github.io/Max.Suika/" target="_blank" rel="noopener">
-      <div class="preview" style="background:radial-gradient(120% 120% at 50% 0%,#241510,#0d0a0a)">
-        <span class="badge" style="color:var(--suika)">PUZZLE</span><span class="num-tag">01</span>
-        <svg viewBox="0 0 320 180" aria-hidden="true">
-          <rect x="92" y="36" width="136" height="124" rx="6" fill="none" stroke="#3a2a22" stroke-width="2"/>
-          <circle cx="124" cy="138" r="20" fill="#ff7a4d"/>
-          <circle cx="170" cy="132" r="26" fill="#ffd24d"/>
-          <circle cx="205" cy="142" r="16" fill="#7ad07a"/>
-          <circle cx="140" cy="100" r="14" fill="#ff5470"/>
-          <circle cx="186" cy="96" r="18" fill="#b07aff"/>
-          <circle cx="160" cy="60" r="10" fill="#ffd24d" opacity=".9"/>
-          <circle cx="160" cy="60" r="10" fill="none" stroke="#fff" stroke-opacity=".25"/>
-          <line x1="160" y1="36" x2="160" y2="50" stroke="#5a4030" stroke-width="2" stroke-dasharray="3 3"/>
+  <!-- ===== GAMES PAGE ===== -->
+  <section id="page-games" class="page active">
+    <header>
+      <div class="eyebrow-row">
+        <span class="eyebrow"><span class="blink"></span>It's free so just play</span>
+        <span class="views"><span id="viewsNum">0</span> views!</span>
+      </div>
+      <div class="tower" aria-hidden="true">
+        <svg viewBox="0 0 120 150">
+          <g class="cube c1"><polygon points="60,96 100,116 60,136 20,116" fill="#ff7a4d"/><polygon points="20,116 60,136 60,150 20,130" fill="#c4502b"/><polygon points="100,116 60,136 60,150 100,130" fill="#e0613a"/></g>
+          <g class="cube c2"><polygon points="60,72 100,92 60,112 20,92" fill="#46c8ff"/><polygon points="20,92 60,112 60,126 20,106" fill="#2a82b0"/><polygon points="100,92 60,112 60,126 100,106" fill="#369ad4"/></g>
+          <g class="cube c3"><polygon points="60,48 100,68 60,88 20,68" fill="#6ad06a"/><polygon points="20,68 60,88 60,102 20,82" fill="#3f8a3f"/><polygon points="100,68 60,88 60,102 100,82" fill="#52a852"/></g>
+          <g class="cube c4"><polygon points="60,24 100,44 60,64 20,44" fill="#a684ff"/><polygon points="20,44 60,64 60,78 20,58" fill="#6a4fb0"/><polygon points="100,44 60,64 60,78 100,58" fill="#8366d4"/></g>
         </svg>
       </div>
-      <div class="body">
-        <h3><span class="dot" style="background:var(--suika)"></span>Max Suika</h3>
-        <p>Drop fruit and merge matching pairs. Chain them up, grow them bigger, and reach for the top of the evolution. A physics puzzle about timing and greed.</p>
-        <div class="meta"><span class="tag">Physics Puzzle</span><span class="tag">Canvas</span><span class="tag">Score Attack</span></div>
-        <div class="play">Play<span class="arrow">&rarr;</span></div>
+      <h1>MAX<br>GAMES</h1>
+      <p class="tagline"><b>Probably fun.</b><br>Browser games you can play right now.</p>
+      <div class="stats">
+        <div class="stat"><div class="num">5<span>games</span></div><div class="lbl">Now live</div></div>
+        <div class="stat"><div class="num" style="font-family:var(--mono);font-weight:700">&#8734;</div><div class="lbl">In progress</div></div>
       </div>
-    </a>
+    </header>
 
-    <!-- TETRIS -->
-    <a class="card tetris" href="https://24bf018-svg.github.io/Max.tetris/" target="_blank" rel="noopener">
-      <div class="preview" style="background:radial-gradient(120% 120% at 50% 0%,#0e1c26,#080d12)">
-        <span class="badge" style="color:var(--tetris)">ARCADE</span><span class="num-tag">02</span>
-        <svg viewBox="0 0 320 180" aria-hidden="true">
-          <g stroke="#0a0d12" stroke-width="1.5">
-            <rect x="118" y="120" width="20" height="20" fill="#46c8ff"/>
-            <rect x="138" y="120" width="20" height="20" fill="#ffce4d"/>
-            <rect x="158" y="120" width="20" height="20" fill="#ffce4d"/>
-            <rect x="178" y="120" width="20" height="20" fill="#7a6bff"/>
-            <rect x="118" y="140" width="20" height="20" fill="#ff6b8a"/>
-            <rect x="138" y="140" width="20" height="20" fill="#46c8ff"/>
-            <rect x="158" y="140" width="20" height="20" fill="#6ad06a"/>
-            <rect x="178" y="140" width="20" height="20" fill="#ff9a4d"/>
-            <rect x="138" y="40" width="20" height="20" fill="#b07aff"/>
-            <rect x="118" y="60" width="20" height="20" fill="#b07aff"/>
-            <rect x="138" y="60" width="20" height="20" fill="#b07aff"/>
-            <rect x="158" y="60" width="20" height="20" fill="#b07aff"/>
-          </g>
-          <line x1="148" y1="84" x2="148" y2="116" stroke="#46c8ff" stroke-opacity=".4" stroke-width="2" stroke-dasharray="2 4"/>
-        </svg>
-      </div>
-      <div class="body">
-        <h3><span class="dot" style="background:var(--tetris)"></span>Max Tetris</h3>
-        <p>Hold, hard drop and full rotation &mdash; the real deal. Clear lines and climb the levels before the stack buries you.</p>
-        <div class="meta"><span class="tag">Stacker</span><span class="tag">Hold &amp; Drop</span><span class="tag">Time Attack</span></div>
-        <div class="play">Play<span class="arrow">&rarr;</span></div>
-      </div>
-    </a>
+    <div class="section-head"><h2>Playable</h2><span class="rule"></span></div>
 
-    <!-- VOXELCRAFT -->
-    <a class="card voxel" href="https://stupendous-speculoos-f02849.netlify.app/" target="_blank" rel="noopener">
-      <div class="preview" style="background:linear-gradient(180deg,#1a2740,#0c1320 60%,#0a0f12)">
-        <span class="badge" style="color:var(--voxel)">SANDBOX</span><span class="num-tag">03</span>
-        <svg viewBox="0 0 320 180" aria-hidden="true">
-          <circle cx="250" cy="46" r="14" fill="#ffe9a8" opacity=".85"/>
-          <g>
-            <polygon points="160,70 220,100 160,130 100,100" fill="#6ad06a"/>
-            <polygon points="100,100 160,130 160,158 100,128" fill="#5a3a26"/>
-            <polygon points="220,100 160,130 160,158 220,128" fill="#7a4f34"/>
-            <polygon points="160,52 184,64 160,76 136,64" fill="#9ad9ff"/>
-            <polygon points="136,64 160,76 160,92 136,80" fill="#4a78a8"/>
-            <polygon points="184,64 160,76 160,92 184,80" fill="#6a9cc8"/>
-          </g>
-        </svg>
-      </div>
-      <div class="body">
-        <h3><span class="dot" style="background:var(--voxel)"></span>VoxelCraft</h3>
-        <p>Mine, gather and build across a vast 128&times;128 world. Crafting, survival and free building in a 3D voxel sandbox.</p>
-        <div class="meta"><span class="tag">Sandbox</span><span class="tag">3D &middot; WebGL</span><span class="tag">Crafting</span></div>
-        <div class="play">Play<span class="arrow">&rarr;</span></div>
-      </div>
-    </a>
+    <div class="grid">
+      <a class="card suika" href="https://24bf018-svg.github.io/Max.Suika/" target="_blank" rel="noopener">
+        <div class="preview" style="background:radial-gradient(120% 120% at 50% 0%,#241510,#0d0a0a)">
+          <span class="badge" style="color:var(--suika)">PUZZLE</span><span class="num-tag">01</span>
+          <svg viewBox="0 0 320 180" aria-hidden="true"><rect x="92" y="36" width="136" height="124" rx="6" fill="none" stroke="#3a2a22" stroke-width="2"/><circle cx="124" cy="138" r="20" fill="#ff7a4d"/><circle cx="170" cy="132" r="26" fill="#ffd24d"/><circle cx="205" cy="142" r="16" fill="#7ad07a"/><circle cx="140" cy="100" r="14" fill="#ff5470"/><circle cx="186" cy="96" r="18" fill="#b07aff"/><circle cx="160" cy="60" r="10" fill="#ffd24d" opacity=".9"/><circle cx="160" cy="60" r="10" fill="none" stroke="#fff" stroke-opacity=".25"/><line x1="160" y1="36" x2="160" y2="50" stroke="#5a4030" stroke-width="2" stroke-dasharray="3 3"/></svg>
+        </div>
+        <div class="body"><h3><span class="dot" style="background:var(--suika)"></span>Max Suika</h3><p>Drop fruit and merge matching pairs. Chain them up, grow them bigger, and reach for the top of the evolution. A physics puzzle about timing and greed.</p><div class="meta"><span class="tag">Physics Puzzle</span><span class="tag">Canvas</span><span class="tag">Score Attack</span></div><div class="play">Play<span class="arrow">&rarr;</span></div></div>
+      </a>
+      <a class="card tetris" href="https://24bf018-svg.github.io/Max.tetris/" target="_blank" rel="noopener">
+        <div class="preview" style="background:radial-gradient(120% 120% at 50% 0%,#0e1c26,#080d12)">
+          <span class="badge" style="color:var(--tetris)">ARCADE</span><span class="num-tag">02</span>
+          <svg viewBox="0 0 320 180" aria-hidden="true"><g stroke="#0a0d12" stroke-width="1.5"><rect x="118" y="120" width="20" height="20" fill="#46c8ff"/><rect x="138" y="120" width="20" height="20" fill="#ffce4d"/><rect x="158" y="120" width="20" height="20" fill="#ffce4d"/><rect x="178" y="120" width="20" height="20" fill="#7a6bff"/><rect x="118" y="140" width="20" height="20" fill="#ff6b8a"/><rect x="138" y="140" width="20" height="20" fill="#46c8ff"/><rect x="158" y="140" width="20" height="20" fill="#6ad06a"/><rect x="178" y="140" width="20" height="20" fill="#ff9a4d"/><rect x="138" y="40" width="20" height="20" fill="#b07aff"/><rect x="118" y="60" width="20" height="20" fill="#b07aff"/><rect x="138" y="60" width="20" height="20" fill="#b07aff"/><rect x="158" y="60" width="20" height="20" fill="#b07aff"/></g><line x1="148" y1="84" x2="148" y2="116" stroke="#46c8ff" stroke-opacity=".4" stroke-width="2" stroke-dasharray="2 4"/></svg>
+        </div>
+        <div class="body"><h3><span class="dot" style="background:var(--tetris)"></span>Max Tetris</h3><p>Hold, hard drop and full rotation &mdash; the real deal. Clear lines and climb the levels before the stack buries you.</p><div class="meta"><span class="tag">Stacker</span><span class="tag">Hold &amp; Drop</span><span class="tag">Time Attack</span></div><div class="play">Play<span class="arrow">&rarr;</span></div></div>
+      </a>
+      <a class="card voxel" href="https://stupendous-speculoos-f02849.netlify.app/" target="_blank" rel="noopener">
+        <div class="preview" style="background:linear-gradient(180deg,#1a2740,#0c1320 60%,#0a0f12)">
+          <span class="badge" style="color:var(--voxel)">SANDBOX</span><span class="num-tag">03</span>
+          <svg viewBox="0 0 320 180" aria-hidden="true"><circle cx="250" cy="46" r="14" fill="#ffe9a8" opacity=".85"/><g><polygon points="160,70 220,100 160,130 100,100" fill="#6ad06a"/><polygon points="100,100 160,130 160,158 100,128" fill="#5a3a26"/><polygon points="220,100 160,130 160,158 220,128" fill="#7a4f34"/><polygon points="160,52 184,64 160,76 136,64" fill="#9ad9ff"/><polygon points="136,64 160,76 160,92 136,80" fill="#4a78a8"/><polygon points="184,64 160,76 160,92 184,80" fill="#6a9cc8"/></g></svg>
+        </div>
+        <div class="body"><h3><span class="dot" style="background:var(--voxel)"></span>VoxelCraft</h3><p>Mine, gather and build across a vast 128&times;128 world. Crafting, survival and free building in a 3D voxel sandbox.</p><div class="meta"><span class="tag">Sandbox</span><span class="tag">3D &middot; WebGL</span><span class="tag">Crafting</span></div><div class="play">Play<span class="arrow">&rarr;</span></div></div>
+      </a>
+      <a class="card climb" href="https://24bf018-svg.github.io/Max-Up/" target="_blank" rel="noopener">
+        <div class="preview" style="background:linear-gradient(180deg,#241a40,#141026 60%,#0c0a14)">
+          <span class="badge" style="color:var(--climb)">3D ACTION</span><span class="num-tag">04</span>
+          <svg viewBox="0 0 320 180" aria-hidden="true"><g opacity=".5"><circle cx="70" cy="40" r="2" fill="#fff"/><circle cx="250" cy="30" r="1.5" fill="#fff"/><circle cx="120" cy="24" r="1.5" fill="#fff"/><circle cx="280" cy="70" r="2" fill="#fff"/></g><g><polygon points="160,150 196,166 160,182 124,166" fill="#3a2f5a"/><polygon points="120,116 150,130 120,144 90,130" fill="#4a3d72"/><polygon points="208,96 236,109 208,122 180,109" fill="#4a3d72"/><polygon points="150,64 178,77 150,90 122,77" fill="#5a4a8a"/><polygon points="166,30 190,41 166,52 142,41" fill="#7a64b0"/></g><circle cx="166" cy="22" r="6" fill="#a684ff"/><path d="M250 150 L250 110 M238 122 L250 110 L262 122" stroke="#a684ff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/></svg>
+        </div>
+        <div class="body"><h3><span class="dot" style="background:var(--climb)"></span>Max-Up</h3><p>Just go up. Leap from platform to platform toward the top of the sky. Fall once and you're back to the start &mdash; careful, but bold.</p><div class="meta"><span class="tag">Only Up-like</span><span class="tag">3D &middot; WebGL</span><span class="tag">Hardcore</span></div><div class="play">Play<span class="arrow">&rarr;</span></div></div>
+      </a>
+      <a class="card dash" href="https://24bf018-svg.github.io/Max-Dash/" target="_blank" rel="noopener">
+        <div class="preview" style="background:linear-gradient(180deg,#2a1030,#160a1e 60%,#0e0814)">
+          <span class="badge" style="color:var(--dash)">RHYTHM</span><span class="num-tag">05</span>
+          <svg viewBox="0 0 320 180" aria-hidden="true"><circle cx="60" cy="40" r="2" fill="#ff4d8a" opacity=".4"/><circle cx="250" cy="48" r="2" fill="#46c8ff" opacity=".4"/><circle cx="285" cy="96" r="1.5" fill="#fff" opacity=".3"/><rect x="0" y="150" width="320" height="30" fill="#ff4d8a" opacity=".08"/><line x1="0" y1="150" x2="320" y2="150" stroke="#ff4d8a" stroke-width="2" opacity=".55"/><polygon points="150,150 166,122 182,150" fill="#ff4d8a"/><polygon points="184,150 198,128 212,150" fill="#ff4d8a" opacity=".75"/><path d="M66 150 Q92 64 138 128" stroke="#46c8ff" stroke-width="2" fill="none" stroke-dasharray="2 5" opacity=".55"/><g transform="rotate(-22 110 92)"><rect x="93" y="75" width="34" height="34" rx="5" fill="#ff4d8a"/><rect x="93" y="75" width="34" height="34" rx="5" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/><circle cx="110" cy="92" r="5" fill="#fff" opacity=".5"/></g></svg>
+        </div>
+        <div class="body"><h3><span class="dot" style="background:var(--dash)"></span>Max Dash</h3><p>Jump to the rhythm and dash past spikes and obstacles without stopping. Three stages with stage select and auto-saved progress &mdash; one mistimed tap and it's over.</p><div class="meta"><span class="tag">Rhythm Action</span><span class="tag">3 Stages</span><span class="tag">Auto-save</span></div><div class="play">Play<span class="arrow">&rarr;</span></div></div>
+      </a>
+    </div>
+  </section>
 
-    <!-- MAX-UP -->
-    <a class="card climb" href="https://24bf018-svg.github.io/Max-Up/" target="_blank" rel="noopener">
-      <div class="preview" style="background:linear-gradient(180deg,#241a40,#141026 60%,#0c0a14)">
-        <span class="badge" style="color:var(--climb)">3D ACTION</span><span class="num-tag">04</span>
-        <svg viewBox="0 0 320 180" aria-hidden="true">
-          <g opacity=".5"><circle cx="70" cy="40" r="2" fill="#fff"/><circle cx="250" cy="30" r="1.5" fill="#fff"/><circle cx="120" cy="24" r="1.5" fill="#fff"/><circle cx="280" cy="70" r="2" fill="#fff"/></g>
-          <g>
-            <polygon points="160,150 196,166 160,182 124,166" fill="#3a2f5a"/>
-            <polygon points="120,116 150,130 120,144 90,130" fill="#4a3d72"/>
-            <polygon points="208,96 236,109 208,122 180,109" fill="#4a3d72"/>
-            <polygon points="150,64 178,77 150,90 122,77" fill="#5a4a8a"/>
-            <polygon points="166,30 190,41 166,52 142,41" fill="#7a64b0"/>
-          </g>
-          <circle cx="166" cy="22" r="6" fill="#a684ff"/>
-          <path d="M250 150 L250 110 M238 122 L250 110 L262 122" stroke="#a684ff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
-        </svg>
-      </div>
-      <div class="body">
-        <h3><span class="dot" style="background:var(--climb)"></span>Max-Up</h3>
-        <p>Just go up. Leap from platform to platform toward the top of the sky. Fall once and you're back to the start &mdash; careful, but bold.</p>
-        <div class="meta"><span class="tag">Only Up-like</span><span class="tag">3D &middot; WebGL</span><span class="tag">Hardcore</span></div>
-        <div class="play">Play<span class="arrow">&rarr;</span></div>
-      </div>
-    </a>
+  <!-- ===== BUILD LOG PAGE ===== -->
+  <section id="page-buildlog" class="page">
+    <div class="info-block" style="max-width:760px">
+      <div class="info-label">Build Log</div>
+      <div class="info-sub">Every game and every update, in order. Green = game, blue = site update, pink = version, orange = account.</div>
+      <div class="bl-list" id="blList"><div class="bl-empty">Loading...</div></div>
+    </div>
+  </section>
 
-  </div>
+  <!-- ===== INFORMATION PAGE ===== -->
+  <section id="page-info" class="page">
+    <div class="info-block">
+      <div class="info-label">About</div>
+      <p class="about-text">I'm Max. I make a new browser game almost every day. They might look simple, but every single one took real hours to build. No installs, no sign-ups &mdash; just press play.</p>
+    </div>
+    <div class="hours-hero">
+      <div class="hours-num">100<span>+</span></div>
+      <div class="hours-lbl">hours poured into these games</div>
+      <div class="hours-sub">They look simple. They weren't.</div>
+    </div>
+  </section>
 
-  <!-- FOOTER -->
+  <!-- ===== FEEDBACK PAGE ===== -->
+  <section id="page-feedback" class="page">
+    <div class="fb-wrap">
+      <div class="info-label">Feedback</div>
+      <p class="fb-intro">Found a bug, got an idea, or just want to say hi? Drop it below. Only Max sees this &mdash; it's not public.</p>
+      <input id="fb-name" class="fb-input" type="text" placeholder="Name (optional)" maxlength="40" autocomplete="off">
+      <textarea id="fb-msg" class="fb-textarea" placeholder="Your message..." maxlength="1000"></textarea>
+      <button id="fb-send" class="fb-send">Send</button>
+      <div id="fb-status" class="fb-status"></div>
+    </div>
+  </section>
+
+  <!-- ===== NEWS PAGE ===== -->
+  <section id="page-news" class="page">
+    <div class="info-block">
+      <div class="info-label">News</div>
+      <div class="news-list" id="newsList"><div class="news-empty">Loading...</div></div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
   <footer>
     <div class="sig">Built daily by <b>Max</b>, one block at a time</div>
     <a href="https://github.com/24bf018-svg" target="_blank" rel="noopener">github / 24bf018-svg &#8599;</a>
   </footer>
 
 </div>
+
+<!-- ===== Firebase (compat) ===== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBptkn2T7jRWoGoz-aIPmweKJHxmSl0dQA",
+    authDomain: "maxgames-bfa16.firebaseapp.com",
+    databaseURL: "https://maxgames-bfa16-default-rtdb.firebaseio.com",
+    projectId: "maxgames-bfa16",
+    storageBucket: "maxgames-bfa16.firebasestorage.app",
+    messagingSenderId: "514936917371",
+    appId: "1:514936917371:web:96b43b51cbcad50b7341de",
+    measurementId: "G-E58KK6NNTV"
+  };
+  const CONFIGURED = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey.indexOf("YOUR_") !== 0;
+
+  /* ---- Tabs ---- */
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('page-' + btn.dataset.page).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  /* ---- Firebase init ---- */
+  var db = null;
+  if (CONFIGURED) {
+    try { firebase.initializeApp(FIREBASE_CONFIG); db = firebase.database(); }
+    catch (e) { console.warn('Firebase init failed:', e); }
+  }
+
+  function escapeHtml(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function todayStr(){ return new Date().toISOString().slice(0,10); }
+  function fmtDate(s){
+    if(!s) return '';
+    var p = String(s).split('-');
+    if(p.length===3) return p[0]+'/'+p[1]+'/'+p[2];
+    return s;
+  }
+  var TYPE_COLOR = { game:'var(--t-game)', update:'var(--t-update)', version:'var(--t-version)', account:'var(--t-account)' };
+  var TYPE_BG = { game:'#16241a', update:'#0e1c26', version:'#241019', account:'#241510' };
+
+  /* ---- Visit counter (starts at 85, animated) ---- */
+  (function(){
+    var numEl = document.getElementById('viewsNum');
+    var reduce = false;
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+    function animateTo(target){
+      if (reduce){ numEl.textContent = target.toLocaleString(); return; }
+      var dur = 1200, startT = null;
+      function step(ts){
+        if (!startT) startT = ts;
+        var p = Math.min((ts - startT) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        numEl.textContent = Math.floor(eased * target).toLocaleString();
+        if (p < 1) requestAnimationFrame(step); else numEl.textContent = target.toLocaleString();
+      }
+      requestAnimationFrame(step);
+    }
+    if (!db) { animateTo(85); return; }
+    var ref = db.ref('visits');
+    var counted = false;
+    try { counted = sessionStorage.getItem('mg_visit') === '1'; } catch (e) {}
+    if (!counted) {
+      ref.transaction(function(cur){ return (cur === null ? 85 : cur) + 1; });
+      try { sessionStorage.setItem('mg_visit', '1'); } catch (e) {}
+    }
+    var first = true;
+    ref.on('value', function(snap){
+      var v = snap.val(); if (v === null) v = 85;
+      if (first){ animateTo(v); first = false; } else { numEl.textContent = v.toLocaleString(); }
+    });
+  })();
+
+  /* ---- Feedback submit ---- */
+  (function(){
+    var btn = document.getElementById('fb-send');
+    var msgEl = document.getElementById('fb-msg');
+    var nameEl = document.getElementById('fb-name');
+    var status = document.getElementById('fb-status');
+    btn.addEventListener('click', function(){
+      var msg = msgEl.value.trim();
+      status.className = 'fb-status';
+      if (!msg) { status.textContent = 'Please write something first.'; status.classList.add('err'); return; }
+      if (!db) { status.textContent = 'Feedback is not connected yet.'; status.classList.add('err'); return; }
+      btn.disabled = true; status.textContent = 'Sending...';
+      db.ref('feedback').push({ name: nameEl.value.trim() || 'anon', message: msg, time: Date.now(), saved: false })
+        .then(function(){ status.textContent = 'Thanks! Got it.'; status.classList.add('ok'); msgEl.value=''; nameEl.value=''; btn.disabled=false; })
+        .catch(function(err){ console.warn(err); status.textContent = 'Something went wrong. Try again.'; status.classList.add('err'); btn.disabled=false; });
+    });
+  })();
+
+  /* ---- News (only show items whose publish date has arrived) ---- */
+  (function(){
+    var listEl = document.getElementById('newsList');
+    if (!db) { listEl.innerHTML = '<div class="news-empty">Not connected yet.</div>'; return; }
+    db.ref('news').on('value', function(snap){
+      var items = [];
+      snap.forEach(function(c){ var v = c.val(); v._id = c.key; items.push(v); });
+      var today = todayStr();
+      items = items.filter(function(n){ return (n.publishDate || '0000-00-00') <= today; });
+      items.sort(function(a,b){
+        var pa = a.publishDate || '', pb = b.publishDate || '';
+        if (pa !== pb) return pb < pa ? -1 : 1;
+        return (b.createdAt||0) - (a.createdAt||0);
+      });
+      if (!items.length){ listEl.innerHTML = '<div class="news-empty">No news yet.</div>'; return; }
+      listEl.innerHTML = items.map(function(n){
+        return '<div class="news-item"><div class="news-date">'+escapeHtml(fmtDate(n.publishDate))+
+          '</div><div class="news-title">'+escapeHtml(n.title)+
+          '</div><div class="news-body">'+escapeHtml(n.body)+'</div></div>';
+      }).join('');
+    });
+  })();
+
+  /* ---- Build Log ---- */
+  (function(){
+    var listEl = document.getElementById('blList');
+    if (!db) { listEl.innerHTML = '<div class="bl-empty">Not connected yet.</div>'; return; }
+    db.ref('buildlog').on('value', function(snap){
+      var items = [];
+      snap.forEach(function(c){ var v = c.val(); v._id = c.key; items.push(v); });
+      items.sort(function(a,b){
+        var da = a.date || '', dbb = b.date || '';
+        if (da !== dbb) return dbb < da ? -1 : 1;
+        return (b.createdAt||0) - (a.createdAt||0);
+      });
+      if (!items.length){ listEl.innerHTML = '<div class="bl-empty">No entries yet.</div>'; return; }
+      listEl.innerHTML = items.map(function(it){
+        var color = TYPE_COLOR[it.type] || 'var(--line)';
+        var bg = TYPE_BG[it.type] || 'var(--panel)';
+        var meta = [];
+        meta.push(escapeHtml(fmtDate(it.date)));
+        if (it.version) meta.push('<span class="ver">'+escapeHtml(it.version)+'</span>');
+        if (it.hours) meta.push('~'+escapeHtml(it.hours)+'h');
+        var icon = it.icon ? escapeHtml(it.icon) : '🎮';
+        return '<div class="bl-card" style="border-left-color:'+color+'">'+
+          '<div class="bl-thumb" style="background:'+bg+'">'+icon+'</div>'+
+          '<div class="bl-info"><div class="bl-title">'+escapeHtml(it.title)+'</div>'+
+          '<div class="bl-meta">'+meta.join('<span style="opacity:.4">·</span>')+'</div>'+
+          (it.desc ? '<div class="bl-desc">'+escapeHtml(it.desc)+'</div>' : '')+
+          '</div></div>';
+      }).join('');
+    });
+  })();
+</script>
 </body>
 </html>
